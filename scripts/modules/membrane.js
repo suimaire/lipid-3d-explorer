@@ -2,13 +2,16 @@
    모듈 1 — 세포막 지질의 종류와 막 비대칭성
 
    지질 탐색은 세 단계다.
-     LEVEL 0  membrane      전체 세포막
-     LEVEL 1  molecule3D    선택한 지질의 3D 확대 모델
-     LEVEL 2  chemical      같은 지질의 화학 구조식
+     LEVEL 0  membrane     전체 세포막 (coarse-grained 모식 모델)
+     LEVEL 1  atomistic3D  선택한 지질의 원자 단위 3D 구조 (기본 확대 화면)
+     LEVEL 2  structure2D  같은 지질의 2D 화학 구조식
 
-   각 단계마다 클릭 가능한 객체를 명시적으로 바꾼다.
-   (예전에는 확대 상태에서도 숨겨진 막 전체가 계속 클릭 대상이라
-    다른 지질로 튀는 문제가 있었다.)
+   전체 막은 지질이 수백 개라 지금처럼 단순화한 모식 모델로 두고,
+   선택한 한 분자만 원자 단위로 그린다(계층형 abstraction).
+
+   확대(LEVEL 1·2) 상태에서는 캔버스 클릭으로 지질이 바뀌지 않는다.
+   setPickables([]) 로 클릭 대상을 아예 비워 두기 때문이다.
+   (예전에는 확대 상태에서도 클릭이 살아 있어 다른 지질로 튀었다.)
    ============================================================ */
 
 import { Viewer, THREE, mat, easeInOut, easeOut } from "../core/viewer.js";
@@ -27,6 +30,8 @@ import {
   STRUCTURE_NOTE,
   STRUCTURE_POINTS,
 } from "../core/structures.js";
+import { getAtomisticModel, fitDistance, atomLegend } from "../core/atomistic.js";
+import { CAMERA_HINT } from "../core/molecules.js";
 
 const COLS = 9;
 const ROWS = 4;
@@ -59,9 +64,15 @@ const CAPTIONS = {
     text:
       "평소 안쪽에만 있던 PS 일부가 바깥쪽으로 옮겨 갑니다. 안쪽으로 되돌리는 flippase의 활성이 떨어지고, 양방향으로 섞어 주는 scramblase가 활성화되면 이런 일이 일어납니다. 이렇게 노출된 PS는 주변 식세포가 알아보는 중요한 신호가 됩니다. 다만 이것은 세포자멸사(apoptosis)에서 일어나는 여러 변화 가운데 하나일 뿐, PS 노출 하나로 세포자멸사가 설명되는 것은 아닙니다.",
   },
-  inspect: {
-    title: "분자 확대 보기",
-    text: "구조를 이루는 부분들을 라벨로 표시했습니다. 머리 부분의 차이가 곧 지질 종류의 차이입니다.",
+  atomistic: {
+    title: "원자 단위 3D 구조",
+    text:
+      "선택한 지질을 원자와 결합이 그대로 보이는 ball-and-stick 모델로 확대했습니다. 드래그로 돌리고 휠로 확대하면서 머리 그룹 · 인산 · 골격 · 소수성 사슬이 어떻게 이어지는지 확인해 보세요. [2D 구조식 보기]를 누르면 같은 분자의 화학 구조식으로 넘어갑니다.",
+  },
+  structure2D: {
+    title: "2D 화학 구조식",
+    text:
+      "같은 분자를 평면 화학 구조식으로 나타냈습니다. 3D 모델과 번갈아 보면서 어느 부분이 머리이고 어느 부분이 꼬리인지 이어서 이해해 보세요.",
   },
 };
 
@@ -209,6 +220,16 @@ export function createMembraneModule() {
   structureEl.hidden = true;
   viewer.host.appendChild(structureEl);
 
+  // 원자 색 범례 — 원자 단위 3D 화면에서만 보인다
+  const atomKeyEl = document.createElement("div");
+  atomKeyEl.className = "atomkey";
+  atomKeyEl.hidden = true;
+  atomKeyEl.innerHTML =
+    atomLegend()
+      .map((x) => `<span><i style="background:${x.color}"></i>${x.label}</span>`)
+      .join("") + `<span class="atomkey__note">수소는 그리지 않았습니다</span>`;
+  viewer.host.appendChild(atomKeyEl);
+
   // 구조식은 2D 이므로 회전은 두지 않고 휠 확대와 드래그 이동만 허용한다.
   let stZoom = 1;
   let stX = 0;
@@ -260,7 +281,7 @@ export function createMembraneModule() {
   /* ---------------- 상태 & 애니메이션 ---------------- */
 
   // LEVEL 0/1/2 를 나타내는 명시적 view state
-  let viewMode = "membrane"; // membrane | molecule3D | chemical
+  let viewMode = "membrane"; // membrane | atomistic3D | structure2D
   let selectedLipid = null;
   let mode = "overview"; // membrane 단계 안에서의 하위 화면
   const tweens = [];
@@ -430,72 +451,82 @@ export function createMembraneModule() {
     lblPS.offset.set(0, 0, 0);
   }
 
-  /* ---------------- Level 2 · 3 : 분자 확대 + 정보 ---------------- */
+  /* ---------------- LEVEL 1 — 원자 단위 3D 구조 ---------------- */
+
+  /* 라벨 문구와 붙일 위치. 분자는 원점에 놓이고 머리가 +Y,
+     소수성 꼬리가 −Y 를 향하도록 미리 돌려져 있다. */
+  const ANNO = [
+    ["head", (info) => `머리 · ${info.head.split(" (")[0]}`, [0, 2.4, 0]],
+    ["P4", () => "4번 인산", [-5.4, 1.8, 0]],
+    ["P5", () => "5번 인산", [5.4, 1.6, 0]],
+    ["phosphate", (info, id) => (id === "SM" ? "포스포콜린의 인산" : "인산 다리 (phosphodiester)"), [5.6, 0.2, 0]],
+    ["backbone", (info, id) => (id === "CHOL" ? "네 고리 스테로이드 골격" : info.backbone.split(" (")[0] + " 골격"), [-5.8, -0.4, 0]],
+    ["ester", () => "에스터 결합 (−CO−O−)", [5.8, -1.6, 0]],
+    ["amide", () => "아미드 결합 (−CO−NH−)", [5.8, -1.6, 0]],
+    ["ene", (info, id) => (id === "SM" ? "trans 이중결합 (Δ4)" : id === "CHOL" ? "C5=C6 이중결합" : "cis 이중결합 → 꼬리가 꺾인다"), [-6.4, 0.8, 0]],
+    ["chain", (info, id) =>
+      id === "CHOL"
+        ? "탄화수소 곁사슬"
+        : id === "SM"
+          ? "소수성 꼬리 2개 (지방산 + 스핑고신 사슬)"
+          : "소수성 사슬 (acyl chain) 2개",
+      [6.0, -5.2, 0]],
+  ];
 
   let inspectId = null;
 
-  /** LEVEL 1 — 선택한 지질의 3D 확대 모델 */
-  function showMolecule3D(id) {
+  /** LEVEL 1 — 선택한 지질의 원자 단위(atomistic) 3D 모델 */
+  function showAtomistic(id) {
     if (!LIPID_BY_ID[id]) return;
     clearTweens();
     typeCycle = null;
     resetPS();
-    hideChemical();
+    hideStructure2D();
     inspectId = id;
     selectedLipid = id;
-    viewMode = "molecule3D";
+    viewMode = "atomistic3D";
     mode = "inspect";
 
     bilayer.visible = false;
     setWater(false); // 확대 화면에서는 배경 점을 치운다
     clearInspect();
 
-    const g = buildLipid(id, { scale: 2.3 });
-    g.position.y = id === "CHOL" ? 2.5 : 2.9;
-    // 확대된 이 분자만 클릭 대상이 된다 -> 다시 누르면 LEVEL 2 로 간다
-    g.userData.pickId = id;
-    inspectGroup.add(g);
+    const model = getAtomisticModel(id);
+    if (!model) return;
+    inspectGroup.add(model);
     inspectGroup.visible = true;
-    inspectGroup.rotation.y = 0;
 
     const info = LIPID_BY_ID[id];
-    const A = g.userData.parts.anchors;
-    const toWorld = (v) => v.clone().multiplyScalar(2.3).add(g.position);
-
-    const anno = [];
-    if (A.head) anno.push([`머리 · ${info.head}`, toWorld(A.head), new THREE.Vector3(0, 0.7, 0)]);
-    if (A.charge)
-      anno.push([
-        id === "PIP2" ? "인산기 (4번 · 5번) → 강한 음전하" : "카르복실기 → 알짜 음전하",
-        toWorld(A.charge),
-        new THREE.Vector3(2.4, 0.4, 0),
-      ]);
-    if (A.phosphate) anno.push(["인산 다리 (phosphodiester)", toWorld(A.phosphate), new THREE.Vector3(2.6, 0, 0)]);
-    if (A.backbone) anno.push([info.backbone.split(" (")[0] + " 골격", toWorld(A.backbone), new THREE.Vector3(-2.8, 0, 0)]);
-    if (A.ring) anno.push(["단단한 네 고리 골격", toWorld(A.ring), new THREE.Vector3(2.4, 0, 0)]);
-    if (A.tail)
-      anno.push([
-        id === "CHOL" ? "짧은 탄화수소 꼬리" : "소수성 꼬리 (acyl chain) 2개",
-        toWorld(A.tail),
-        new THREE.Vector3(2.8, -0.4, 0),
-      ]);
-
-    for (const [text, pos, off] of anno) {
-      const item = L.add(text, {
-        anchor: pos,
-        offset: off,
-        variant: "anno",
-        group: "inspect",
-      });
-      inspectLabels.push(item);
+    const A = model.userData.anchors;
+    for (const [key, text, off] of ANNO) {
+      if (!A[key]) continue;
+      inspectLabels.push(
+        L.add(text(info, id), {
+          anchor: A[key].clone(),
+          offset: new THREE.Vector3(off[0], off[1], off[2]),
+          variant: "anno",
+          group: "inspect",
+        })
+      );
     }
     L.only(["inspect"]);
 
-    viewer.controls.frame({ radius: id === "CHOL" ? 14 : 17, phi: 1.5, theta: 0.35, target: new THREE.Vector3(0, 0.1, 0) });
+    // 분자마다 크기가 다르므로 bounding box 를 재서 카메라 거리를 맞춘다
+    const dist = fitDistance(viewer.camera, model.userData.extent);
+    const hint = CAMERA_HINT[id] || { theta: 0.42, phi: 1.48 };
+    viewer.controls.maxRadius = Math.max(140, dist * 1.8);
+    viewer.controls.frame({
+      radius: dist,
+      theta: hint.theta,
+      phi: hint.phi,
+      target: new THREE.Vector3(0, 0, 0),
+    });
 
-    viewer.setPickables([inspectGroup]);
-    setCaption(els, "inspect", `${info.abbr} · ${info.ko}`);
-    showDetail(els, info);
+    // 확대 화면에서는 캔버스 클릭으로 다른 지질을 고르지 않는다(드래그 회전·휠 확대만).
+    viewer.setPickables([]);
+    atomKeyEl.hidden = false;
+    setCaption(els, "atomistic", `${info.abbr} · ${info.ko}`);
+    showDetail(els, info, model.userData.molecule);
     highlightLegend(id);
     syncButtons();
   }
@@ -508,27 +539,30 @@ export function createMembraneModule() {
       if (i >= 0) L.items.splice(i, 1);
     }
     inspectLabels.length = 0;
+    atomKeyEl.hidden = true;
   }
 
+  /** LEVEL 1·2 → LEVEL 0 */
   function leaveInspect() {
-    hideChemical();
+    hideStructure2D();
     if (mode !== "inspect" && !inspectId) return;
     clearInspect();
     inspectGroup.visible = false;
     bilayer.visible = true;
     setWater(true);
+    viewer.controls.maxRadius = 140;
     inspectId = null;
     hideDetail(els);
     highlightLegend(null);
   }
 
-  /* ---------------- LEVEL 2 — 화학 구조식 ---------------- */
+  /* ---------------- LEVEL 2 — 2D 화학 구조식 ---------------- */
 
-  function showChemical(id) {
+  function showStructure2D(id) {
     if (!LIPID_BY_ID[id]) return;
-    if (viewMode !== "molecule3D") showMolecule3D(id);
+    if (viewMode !== "atomistic3D") showAtomistic(id);
     selectedLipid = id;
-    viewMode = "chemical";
+    viewMode = "structure2D";
     const info = LIPID_BY_ID[id];
 
     structureEl.innerHTML =
@@ -539,7 +573,7 @@ export function createMembraneModule() {
             `<span class="structure__key"><i style="background:${x.color}"></i>${x.label}</span>`
         )
         .join("") +
-      `<span class="structure__hint">색은 3D 모델과 맞춘 학습용 구분입니다.</span>` +
+      `<span class="structure__hint">부위를 구분하려고 칠한 학습용 색입니다. 3D 모델의 색은 원소별 화학 관례를 따릅니다.</span>` +
       `</div>` +
       `<div class="structure__figure">${buildStructureSvg(id)}</div>`;
     resetStructureTransform();
@@ -547,15 +581,16 @@ export function createMembraneModule() {
     void structureEl.offsetWidth; // 강제 reflow — 탭이 숨겨져 있어도 전환이 확실히 시작된다
     structureEl.classList.add("is-open");
 
-    viewer.setPickables([]); // 구조식 화면에서는 3D 클릭을 받지 않는다
+    viewer.setPickables([]); // 구조식 화면에서도 3D 클릭을 받지 않는다
     viewer.labels.setEnabled(false);
-    setCaption(els, "inspect", `${info.abbr} · 화학 구조`);
+    atomKeyEl.hidden = true;
+    setCaption(els, "structure2D", `${info.abbr} · 2D 화학 구조식`);
     showStructureDetail(els, info, id);
     highlightLegend(id);
     syncButtons();
   }
 
-  function hideChemical() {
+  function hideStructure2D() {
     if (structureEl.hidden) return;
     structureEl.classList.remove("is-open");
     structureEl.hidden = true;
@@ -563,16 +598,16 @@ export function createMembraneModule() {
     if (labelsWanted) viewer.labels.setEnabled(true);
   }
 
-  /** LEVEL 2 -> LEVEL 1 */
-  function backToMolecule3D() {
+  /** LEVEL 2 → LEVEL 1 (선택한 지질은 그대로 유지한다) */
+  function backToAtomistic() {
     const id = selectedLipid;
-    hideChemical();
-    if (id) showMolecule3D(id);
+    hideStructure2D();
+    if (id) showAtomistic(id);
   }
 
+  // 지질 선택은 LEVEL 0(전체 막)에서만 일어난다.
   viewer.onPick((id) => {
-    if (viewMode === "membrane") showMolecule3D(id);
-    else if (viewMode === "molecule3D") showChemical(selectedLipid || id);
+    if (viewMode === "membrane") showAtomistic(id);
   });
 
   /* ---------------- 프레임 갱신 ---------------- */
@@ -595,7 +630,7 @@ export function createMembraneModule() {
         typeCycle.step();
       }
     }
-    if (inspectGroup.visible) inspectGroup.rotation.y += dt * 0.28;
+    // 확대 화면의 회전은 [자동 회전] 버튼이 제어하는 카메라 궤도가 맡는다.
   });
 
   /* ---------------- UI 배선 ---------------- */
@@ -616,15 +651,15 @@ export function createMembraneModule() {
       }
       if (a === "back") setMode("overview");
       if (a === "structure") {
-        // LEVEL 1 <-> LEVEL 2 를 버튼으로도 오갈 수 있게 한다
-        if (viewMode === "chemical") backToMolecule3D();
-        else if (viewMode === "molecule3D") showChemical(selectedLipid);
+        // LEVEL 1 <-> LEVEL 2. 어느 쪽으로 오가든 선택한 지질은 그대로다.
+        if (viewMode === "structure2D") backToAtomistic();
+        else if (viewMode === "atomistic3D") showStructure2D(selectedLipid);
       }
       if (a === "labels") {
         const on = b.getAttribute("aria-pressed") !== "true";
         b.setAttribute("aria-pressed", String(on));
         labelsWanted = on;
-        if (viewMode !== "chemical") viewer.labels.setEnabled(on);
+        if (viewMode !== "structure2D") viewer.labels.setEnabled(on);
       }
       if (a === "spin") {
         const on = b.getAttribute("aria-pressed") !== "true";
@@ -637,7 +672,7 @@ export function createMembraneModule() {
   els.legend.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-lipid]");
     if (!btn) return;
-    showMolecule3D(btn.dataset.lipid);
+    showAtomistic(btn.dataset.lipid);
   });
 
   function syncButtons() {
@@ -650,9 +685,8 @@ export function createMembraneModule() {
     if (structureBtn) {
       const show = viewMode !== "membrane";
       structureBtn.hidden = !show;
-      structureBtn.textContent =
-        viewMode === "chemical" ? "3D 모델 보기" : "화학 구조 보기";
-      structureBtn.setAttribute("aria-pressed", String(viewMode === "chemical"));
+      structureBtn.textContent = viewMode === "structure2D" ? "3D 구조 보기" : "2D 구조식 보기";
+      structureBtn.setAttribute("aria-pressed", String(viewMode === "structure2D"));
     }
   }
   const structureBtn = document.querySelector('[data-m1="structure"]');
@@ -734,15 +768,28 @@ function setCaption(els, key, titleOverride) {
   els.capText.textContent = c.text;
 }
 
-function showDetail(els, info) {
+/**
+ * LEVEL 1 오른쪽 패널.
+ * mol 을 주면 지금 보고 있는 원자 단위 모델이 어떤 대표 분자인지 함께 밝힌다.
+ */
+function showDetail(els, info, mol) {
   els.detailName.textContent = `${info.name} (${info.abbr})`;
-  els.detailList.innerHTML = `
+  els.detailList.innerHTML =
+    `
     <dt>한글 이름</dt><dd>${info.ko}</dd>
     <dt>골격</dt><dd>${info.backbone}</dd>
     <dt>머리 그룹</dt><dd>${info.head}</dd>
     <dt>전하 · 극성</dt><dd>${info.charge}</dd>
     <dt>주로 있는 곳</dt><dd><b>${info.leaflet}</b></dd>
-    <dt>핵심 기능</dt><dd>${info.role}</dd>`;
+    <dt>핵심 기능</dt><dd>${info.role}</dd>` +
+    (mol
+      ? `<dt>대표 구조</dt><dd>${mol.species}<br><span class="datalist__sub">${mol.acyl} · ${mol.formula}</span></dd>` +
+        `<dt>읽을 때 주의</dt><dd class="structure__note">${
+          info.id === "CHOL"
+            ? "콜레스테롤은 지방산 사슬이 없는 단일 화합물이라, 이 구조가 곧 콜레스테롤 분자 자체입니다. 수소는 그리지 않았습니다."
+            : "화면의 3D 모델은 학습용 <b>대표 구조 예시</b>입니다. 실제 생체막에서는 지방산 사슬의 길이와 불포화도가 다양할 수 있습니다. 수소는 그리지 않았습니다."
+        }</dd>`
+      : "");
   els.detail.hidden = false;
 }
 
@@ -750,7 +797,7 @@ function hideDetail(els) {
   els.detail.hidden = true;
 }
 
-/** LEVEL 2 오른쪽 패널 — 구조에서 짚어 줄 점 + 일반화 구조 안내 */
+/** LEVEL 2 오른쪽 패널 — 구조에서 짚어 줄 점 + class 수준 구조라는 안내 */
 function showStructureDetail(els, info, id) {
   const points = (STRUCTURE_POINTS[id] || []).map((t) => `<li>${t}</li>`).join("");
   els.detailName.textContent = `${info.name} (${info.abbr}) · 화학 구조`;

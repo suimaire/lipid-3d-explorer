@@ -58,21 +58,21 @@
           <span>브라우저에서 WebGL이 꺼져 있거나 지원되지 않습니다. 최신 Chrome · Edge · Safari에서 다시 열어 주세요.</span>
         </div>
       </div>
-      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · 분자를 클릭하면 확대해서 볼 수 있습니다.</p>
+      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · <b>막에서 지질 하나를 클릭하면 원자 단위 3D 구조</b>로 확대됩니다.</p>
 
       <div class="controls" role="group" aria-label="모듈 1 조작">
         <button type="button" class="btn" data-m1="overview">전체 막 보기</button>
         <button type="button" class="btn" data-m1="types">지질 종류 보기</button>
         <button type="button" class="btn" data-m1="asymmetry">막 비대칭성 보기</button>
         <button type="button" class="btn" data-m1="psflip">PS 외부 노출 보기</button>
-        <button type="button" class="btn btn--structure" data-m1="structure" aria-pressed="false" hidden>화학 구조 보기</button>
+        <button type="button" class="btn btn--structure" data-m1="structure" aria-pressed="false" hidden>2D 구조식 보기</button>
         <span class="controls__sep" aria-hidden="true"></span>
         <button type="button" class="btn btn--ghost" data-m1="labels" aria-pressed="true">라벨 표시</button>
         <button type="button" class="btn btn--ghost" data-m1="spin" aria-pressed="true">자동 회전</button>
         <button type="button" class="btn btn--reset" data-m1="reset">Reset</button>
       </div>
 
-      <div class="legend" id="m1-legend" aria-label="지질 종류 목록. 클릭하면 확대해서 관찰합니다."></div>
+      <div class="legend" id="m1-legend" aria-label="지질 종류 목록. 클릭하면 원자 단위 3D 구조로 확대해서 관찰합니다."></div>
     </div>
 
     <aside class="panel">
@@ -102,6 +102,7 @@
       <div class="panel__block">
         <p class="panel__eyebrow">학생이 봐야 할 포인트</p>
         <ol class="points">
+          <li>지질 하나를 클릭하면 <b>원자 단위 3D 구조</b>가 열리고, 거기서 <b>2D 구조식</b>과 번갈아 볼 수 있다.</li>
           <li>머리(head)는 물과 닿는 바깥쪽, 꼬리(tail)는 서로 마주 보고 안쪽에 모인다.</li>
           <li>바깥층에는 PC · SM이, 안쪽층에는 PE · PS · PI가 상대적으로 많다.</li>
           <li>PIP2는 <b>양은 적지만</b> 안쪽층에만 있고, 모듈 2의 주인공이 된다.</li>
