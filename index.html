@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>지질의 생화학 3D 탐색기 · HAFS 생명과학 실험실</title>
+<meta name="description" content="세포막 지질의 종류와 비대칭성, PIP2 신호전달, 지방산 베타산화를 3D 애니메이션으로 탐구하는 생화학 수업용 인터랙티브 자료." />
+<link rel="stylesheet" href="./styles/app.css" />
+<link rel="icon" href="./assets/favicon.svg" />
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__brand">
+      <p class="kicker">HAFS SCIENCE LEARNING LAB · BIOCHEMISTRY</p>
+      <h1>지질의 생화학 <span>3D 탐색기</span></h1>
+      <p class="site-header__lead">
+        세포막을 이루는 지질의 <b>종류와 배치</b>, 지질이 만들어 내는 <b>신호</b>, 그리고 지질을 분해해
+        에너지를 얻는 <b>대사 경로</b>를 3D 모델을 직접 움직여 보며 확인합니다.
+      </p>
+    </div>
+    <a class="site-header__back" href="https://suimaire.github.io/">← 수업 포털</a>
+  </div>
+
+  <nav class="tabs" aria-label="모듈 선택">
+    <button class="tab" type="button" data-tab="membrane" aria-selected="true">
+      <span class="tab__no">모듈 1</span>
+      <span class="tab__name">세포막 지질과 막 비대칭성</span>
+    </button>
+    <button class="tab" type="button" data-tab="pip2" aria-selected="false">
+      <span class="tab__no">모듈 2</span>
+      <span class="tab__name">PIP2 신호전달 (IP3 · DAG)</span>
+    </button>
+    <button class="tab" type="button" data-tab="beta" aria-selected="false">
+      <span class="tab__no">모듈 3</span>
+      <span class="tab__name">지방산 베타산화</span>
+    </button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ==================== 모듈 1 ==================== -->
+<section class="module" id="module-membrane" data-module="membrane">
+  <div class="module__intro">
+    <h2>세포막 지질의 종류와 막 비대칭성</h2>
+    <p class="module__question">
+      세포막은 똑같은 인지질이 죽 늘어선 막일까, 아니면 <b>여러 종류의 지질이 서로 다른 쪽에 배치된</b> 구조일까?
+    </p>
+  </div>
+
+  <div class="module__body">
+    <div class="stage">
+      <div class="canvas-wrap" id="canvas-membrane">
+        <div class="canvas-fallback" role="status">
+          <b>3D 화면을 불러오지 못했습니다.</b>
+          <span>브라우저에서 WebGL이 꺼져 있거나 지원되지 않습니다. 최신 Chrome · Edge · Safari에서 다시 열어 주세요.</span>
+        </div>
+      </div>
+      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · 분자를 클릭하면 확대해서 볼 수 있습니다.</p>
+
+      <div class="controls" role="group" aria-label="모듈 1 조작">
+        <button type="button" class="btn" data-m1="overview">전체 막 보기</button>
+        <button type="button" class="btn" data-m1="types">지질 종류 보기</button>
+        <button type="button" class="btn" data-m1="asymmetry">막 비대칭성 보기</button>
+        <button type="button" class="btn" data-m1="psflip">PS 외부 노출 보기</button>
+        <span class="controls__sep" aria-hidden="true"></span>
+        <button type="button" class="btn btn--ghost" data-m1="labels" aria-pressed="true">라벨 표시</button>
+        <button type="button" class="btn btn--ghost" data-m1="spin" aria-pressed="true">자동 회전</button>
+        <button type="button" class="btn btn--reset" data-m1="reset">Reset</button>
+      </div>
+
+      <div class="legend" id="m1-legend" aria-label="지질 종류 목록. 클릭하면 확대해서 관찰합니다."></div>
+    </div>
+
+    <aside class="panel">
+      <div class="panel__block panel__block--step">
+        <p class="panel__eyebrow">현재 보고 있는 것</p>
+        <h3 id="m1-caption-title">전체 막 보기</h3>
+        <p id="m1-caption-text" class="panel__caption"></p>
+      </div>
+
+      <div class="panel__block panel__block--detail" id="m1-detail" hidden>
+        <p class="panel__eyebrow">선택한 지질</p>
+        <h3 id="m1-detail-name"></h3>
+        <dl class="datalist" id="m1-detail-list"></dl>
+        <button type="button" class="btn btn--small" data-m1="back">← 막 전체로 돌아가기</button>
+      </div>
+
+      <div class="panel__block">
+        <p class="panel__eyebrow">핵심 개념</p>
+        <ul class="bullets">
+          <li>세포막은 <b>균일한 막이 아니다.</b> 여러 종류의 지질이 섞여 있다.</li>
+          <li>막 지질은 종류에 따라 <b>선호하는 leaflet(층)</b>이 다르다 — 막 비대칭성.</li>
+          <li><b>PS의 바깥 노출</b>은 세포 상태 변화를 알리는 중요한 신호가 될 수 있다.</li>
+          <li><b>콜레스테롤</b>은 인지질 사이사이에 삽입되어 막의 유동성과 질서를 조절한다.</li>
+        </ul>
+      </div>
+
+      <div class="panel__block">
+        <p class="panel__eyebrow">학생이 봐야 할 포인트</p>
+        <ol class="points">
+          <li>머리(head)는 물과 닿는 바깥쪽, 꼬리(tail)는 서로 마주 보고 안쪽에 모인다.</li>
+          <li>바깥층에는 PC · SM이, 안쪽층에는 PE · PS · PI가 상대적으로 많다.</li>
+          <li>PIP2는 <b>양은 적지만</b> 안쪽층에만 있고, 모듈 2의 주인공이 된다.</li>
+          <li>콜레스테롤은 인지질을 밀어내지 않고 <b>틈에 끼어 들어간다.</b></li>
+        </ol>
+      </div>
+
+      <p class="note">
+        ※ 여기 표시한 조성은 <b>동물 세포 원형질막의 대표적 경향</b>을 단순화한 것입니다. 실제 조성은 세포 종류,
+        소기관 막의 종류, 세포의 상태에 따라 달라지며 고정된 비율이 아닙니다.
+      </p>
+    </aside>
+  </div>
+</section>
+
+<!-- ==================== 모듈 2 ==================== -->
+<section class="module" id="module-pip2" data-module="pip2" hidden>
+  <div class="module__intro">
+    <h2>세포막 인지질과 PIP2 신호전달</h2>
+    <p class="module__question">
+      PIP2 하나가 잘리면 왜 <b>서로 다른 두 신호 분자</b>가 생기고, 왜 하나는 막에 남고 하나는 세포질로 퍼질까?
+    </p>
+  </div>
+
+  <div class="module__body">
+    <div class="stage">
+      <div class="canvas-wrap" id="canvas-pip2">
+        <div class="canvas-fallback" role="status">
+          <b>3D 화면을 불러오지 못했습니다.</b>
+          <span>브라우저에서 WebGL이 꺼져 있거나 지원되지 않습니다. 최신 Chrome · Edge · Safari에서 다시 열어 주세요.</span>
+        </div>
+      </div>
+      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소</p>
+
+      <div class="controls" role="group" aria-label="모듈 2 재생 조작">
+        <button type="button" class="btn btn--primary" data-m2="play">▶ 재생</button>
+        <button type="button" class="btn" data-m2="prev">← 이전 단계</button>
+        <button type="button" class="btn" data-m2="next">다음 단계 →</button>
+        <span class="controls__sep" aria-hidden="true"></span>
+        <button type="button" class="btn btn--ghost" data-m2="labels" aria-pressed="true">라벨 표시</button>
+        <button type="button" class="btn btn--reset" data-m2="reset">Reset</button>
+      </div>
+
+      <div class="controls controls--secondary" role="group" aria-label="모듈 2 장면 바로가기">
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="0">PIP2 위치 보기</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="1">PLC 작용</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="2">절단 애니메이션 재생</button>
+        <button type="button" class="btn btn--small" data-m2="compare" aria-pressed="false">DAG / IP3 비교</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="5">Ca2+ 방출 보기</button>
+      </div>
+
+      <ol class="steps" id="m2-steps" aria-label="단계 목록"></ol>
+    </div>
+
+    <aside class="panel">
+      <div class="panel__block panel__block--step">
+        <p class="panel__eyebrow">단계 <span id="m2-step-no">1 / 7</span></p>
+        <h3 id="m2-caption-title"></h3>
+        <p id="m2-caption-text" class="panel__caption"></p>
+      </div>
+
+      <div class="panel__block panel__block--detail" id="m2-compare" hidden>
+        <p class="panel__eyebrow">구조 차이 → 위치 차이 → 기능 차이</p>
+        <table class="compare">
+          <thead><tr><th scope="col"></th><th scope="col">DAG</th><th scope="col">IP3</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">남은 구조</th><td>글리세롤 + <b>acyl chain 2개</b></td><td><b>인산 3개</b>가 붙은 이노시톨 고리</td></tr>
+            <tr><th scope="row">성질</th><td>소수성이 큼</td><td>친수성이 매우 큼</td></tr>
+            <tr><th scope="row">있는 곳</th><td><b>막에 남음</b> (membrane-bound)</td><td><b>세포질로 확산</b> (soluble)</td></tr>
+            <tr><th scope="row">하는 일</th><td>막에서 PKC를 불러 모음</td><td>ER의 IP3 수용체를 열어 Ca2+ 방출</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel__block">
+        <p class="panel__eyebrow">핵심 개념</p>
+        <ul class="bullets">
+          <li>PIP2는 막 <b>안쪽 leaflet</b>에 존재하는 phosphoinositide이다.</li>
+          <li>PLC는 PIP2를 잘라 <b>DAG와 IP3</b>를 만든다.</li>
+          <li>DAG는 소수성 꼬리를 그대로 가지므로 <b>막에 남는다.</b></li>
+          <li>IP3는 인산기가 많아 친수성이 커서 <b>세포질로 퍼진다.</b></li>
+          <li>막 지질은 구조물일 뿐 아니라 <b>신호전달 분자</b>이기도 하다.</li>
+        </ul>
+      </div>
+
+      <div class="panel__block">
+        <p class="panel__eyebrow">학생이 봐야 할 포인트</p>
+        <ol class="points">
+          <li>PIP2의 인산기가 <b>세포질 쪽</b>을 향하고 있는지 확인한다.</li>
+          <li>잘린 뒤 <b>꼬리를 가진 쪽</b>과 <b>인산을 가진 쪽</b>이 각각 어디로 가는지 본다.</li>
+          <li>IP3가 ER까지 가서 Ca2+ 통로를 여는 흐름을 따라간다.</li>
+          <li>DAG와 Ca2+가 <b>함께</b> 있을 때 PKC가 막에서 활성화된다.</li>
+        </ol>
+      </div>
+
+      <p class="note">
+        ※ 여기 보여 주는 흐름은 Gq–PLC-beta 계열의 <b>대표적인(canonical) 경로 예시</b>를 단순화한 것입니다.
+        PLC와 IP3 수용체에는 여러 아형이 있고, 세포 종류에 따라 반응의 세부 내용은 달라집니다.
+      </p>
+    </aside>
+  </div>
+</section>
+
+<!-- ==================== 모듈 3 ==================== -->
+<section class="module" id="module-beta" data-module="beta" hidden>
+  <div class="module__intro">
+    <h2>지방산 베타산화 (β-oxidation)</h2>
+    <p class="module__question">
+      지방산은 왜 <b>2탄소씩</b> 잘려 나가면서 acetyl-CoA를 만들까? 그리고 왜 하필 <b>β 탄소</b>일까?
+    </p>
+  </div>
+
+  <div class="module__body">
+    <div class="stage">
+      <div class="canvas-wrap" id="canvas-beta">
+        <div class="canvas-fallback" role="status">
+          <b>3D 화면을 불러오지 못했습니다.</b>
+          <span>브라우저에서 WebGL이 꺼져 있거나 지원되지 않습니다. 최신 Chrome · Edge · Safari에서 다시 열어 주세요.</span>
+        </div>
+      </div>
+      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · 장면은 미토콘드리아 <b>기질(matrix)</b> 안입니다.</p>
+
+      <div class="controls" role="group" aria-label="모듈 3 재생 조작">
+        <button type="button" class="btn btn--primary" data-m3="cycle">1 cycle 재생</button>
+        <button type="button" class="btn" data-m3="repeat">반복 재생 (C16 → 끝까지)</button>
+        <button type="button" class="btn" data-m3="prev">← 이전 단계</button>
+        <button type="button" class="btn" data-m3="next">다음 단계 →</button>
+        <span class="controls__sep" aria-hidden="true"></span>
+        <button type="button" class="btn btn--reset" data-m3="reset">Reset</button>
+      </div>
+
+      <div class="controls controls--secondary" role="group" aria-label="모듈 3 표시 옵션">
+        <button type="button" class="btn btn--small" data-m3="numbers" aria-pressed="true">탄소 번호 보기</button>
+        <button type="button" class="btn btn--small" data-m3="why" aria-pressed="false">왜 β-산화인가</button>
+        <button type="button" class="btn btn--small" data-m3="example" aria-pressed="false">C16 예시 계산</button>
+      </div>
+
+      <ol class="steps" id="m3-steps" aria-label="한 cycle의 4단계"></ol>
+    </div>
+
+    <aside class="panel">
+      <div class="panel__block panel__block--step">
+        <p class="panel__eyebrow">현재 단계</p>
+        <h3 id="m3-caption-title"></h3>
+        <p id="m3-caption-text" class="panel__caption"></p>
+      </div>
+
+      <div class="panel__block panel__block--tally">
+        <p class="panel__eyebrow">지금까지의 결과 <span class="tally__chain" id="m3-chain">C16 acyl-CoA</span></p>
+        <div class="tally" id="m3-tally">
+          <div class="tally__item"><span class="tally__num" id="m3-cycles">0</span><span class="tally__label">cycle</span></div>
+          <div class="tally__item"><span class="tally__num" id="m3-acetyl">0</span><span class="tally__label">acetyl-CoA</span></div>
+          <div class="tally__item"><span class="tally__num" id="m3-nadh">0</span><span class="tally__label">NADH</span></div>
+          <div class="tally__item"><span class="tally__num" id="m3-fadh2">0</span><span class="tally__label">FADH2</span></div>
+        </div>
+        <p class="tally__hint">한 cycle이 끝날 때마다 사슬은 <b>탄소 2개</b>가 짧아집니다.</p>
+      </div>
+
+      <div class="panel__block panel__block--detail" id="m3-example" hidden>
+        <p class="panel__eyebrow">C16 (palmitoyl-CoA) 예시 계산</p>
+        <ul class="bullets bullets--tight">
+          <li>사슬을 <b>8개</b>의 2탄소 조각으로 나누려면 자르는 횟수 = <b>7 cycle</b></li>
+          <li>acetyl-CoA <b>8개</b> · NADH <b>7개</b> · FADH2 <b>7개</b></li>
+          <li>일반식: 짝수 탄소 포화 지방산 C<sub>n</sub> → cycle <b>n/2 − 1</b>, acetyl-CoA <b>n/2</b></li>
+        </ul>
+        <p class="note note--inline">
+          보조 정보: 산화적 인산화까지 더하면 흔히 쓰는 교과서 값으로 약 106 ATP에 해당합니다
+          (acetyl-CoA 8×10 + NADH 7×2.5 + FADH2 7×1.5 − 활성화에 쓴 2). P/O 비 값은 교재마다 다릅니다.
+        </p>
+      </div>
+
+      <div class="panel__block">
+        <p class="panel__eyebrow">핵심 개념</p>
+        <ul class="bullets">
+          <li>지방산은 먼저 <b>활성화</b>되어 fatty acyl-CoA가 된 뒤 대사에 들어간다.</li>
+          <li>베타산화는 <b>미토콘드리아 기질</b>에서 일어난다.</li>
+          <li>한 cycle = <b>산화 → 수화 → 산화 → 절단</b>의 반복이다.</li>
+          <li>매 cycle마다 acetyl-CoA 1개가 떨어지고 사슬은 <b>2탄소</b> 짧아진다.</li>
+          <li>매 cycle마다 <b>FADH2 1개, NADH 1개</b>가 만들어진다.</li>
+        </ul>
+      </div>
+
+      <div class="panel__block">
+        <p class="panel__eyebrow">학생이 봐야 할 포인트</p>
+        <ol class="points">
+          <li>카르보닐 탄소(C1)를 기준으로 α(C2), β(C3)를 세는 방법을 확인한다.</li>
+          <li>산화가 <b>β 탄소</b>에 집중되는 이유(C–C 결합을 끊기 쉬운 상태로 만든다)를 본다.</li>
+          <li>잘려 나가는 조각이 항상 <b>탄소 2개</b>임을 확인한다.</li>
+          <li>남은 사슬 끝에 <b>새 CoA</b>가 붙어 곧바로 다음 cycle로 들어간다.</li>
+        </ol>
+      </div>
+
+      <p class="note">
+        ※ 그림은 <b>짝수 탄소 포화 지방산(palmitate, C16)</b>을 예로 든 교육용 단순화입니다.
+        불포화 지방산이나 홀수 탄소 지방산은 추가 효소가 더 필요합니다. 지방산의 활성화는 세포질 쪽에서 일어나고,
+        긴 사슬 acyl 그룹은 <b>카르니틴 셔틀</b>을 거쳐 기질로 들어옵니다.
+      </p>
+    </aside>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <p>HAFS 생명과학 실험실 · 생화학 특강 보조자료 — 지질의 생화학 3D 탐색기</p>
+  <p class="site-footer__meta">Three.js 기반 정적 웹페이지 · 외부 API 없음 · <a href="https://suimaire.github.io/">수업 포털로 돌아가기</a></p>
+</footer>
+
+<noscript>
+  <p style="padding:24px;text-align:center">이 페이지는 3D 애니메이션을 위해 JavaScript가 필요합니다.</p>
+</noscript>
+<script type="module" src="./scripts/main.js"></script>
+</body>
+</html>
