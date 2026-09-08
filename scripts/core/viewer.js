@@ -54,7 +54,7 @@ class Orbit {
       this.moved = 0;
       px = e.clientX;
       py = e.clientY;
-      dom.setPointerCapture?.(pointerId);
+      capture(dom, pointerId, true);
     };
 
     const move = (e) => {
@@ -72,7 +72,7 @@ class Orbit {
     const up = (e) => {
       if (e.pointerId !== pointerId) return;
       this.dragging = false;
-      dom.releasePointerCapture?.(pointerId);
+      capture(dom, pointerId, false);
       pointerId = null;
     };
 
@@ -321,22 +321,29 @@ export class Viewer {
     this._clickHandlers.push(fn);
   }
 
+  /** 현재 상태에서 클릭 가능한 객체만 등록한다(빈 배열이면 클릭이 아예 없다). */
   setPickables(objects) {
-    this._pickables = objects;
+    this._pickables = objects || [];
   }
 
   _onClick(e) {
-    if (!this._pickables || this.controls.moved > 6) return;
+    if (!this._pickables || !this._pickables.length) return;
+    if (this.controls.moved > 6) return;
     const r = this.host.getBoundingClientRect();
     this.pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
     this.pointer.y = -((e.clientY - r.top) / r.height) * 2 + 1;
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const hits = this.raycaster.intersectObjects(this._pickables, true);
-    if (!hits.length) return;
-    let obj = hits[0].object;
-    while (obj && obj.userData.pickId === undefined) obj = obj.parent;
-    if (!obj) return;
-    for (const fn of this._clickHandlers) fn(obj.userData.pickId, obj);
+    for (const hit of hits) {
+      // three.js 의 raycaster 는 visible=false 인 것도 그대로 맞힌다.
+      // 숨어 있는 물체가 잡히지 않도록 조상까지 거슬러 올라가 확인한다.
+      if (!isVisible(hit.object)) continue;
+      let obj = hit.object;
+      while (obj && obj.userData.pickId === undefined) obj = obj.parent;
+      if (!obj) continue;
+      for (const fn of this._clickHandlers) fn(obj.userData.pickId, obj);
+      return;
+    }
   }
 
   resize() {
@@ -363,6 +370,26 @@ export class Viewer {
     this.active = on;
     if (on) this.resize();
   }
+}
+
+/** 포인터 캡처는 포인터가 이미 사라졌으면 예외를 던지므로 감싸 둔다. */
+function capture(dom, id, on) {
+  try {
+    if (on) dom.setPointerCapture?.(id);
+    else dom.releasePointerCapture?.(id);
+  } catch {
+    /* 이미 해제된 포인터 — 무시해도 된다 */
+  }
+}
+
+/** 자기 자신과 모든 조상이 visible 일 때만 true */
+function isVisible(obj) {
+  let o = obj;
+  while (o) {
+    if (o.visible === false) return false;
+    o = o.parent;
+  }
+  return true;
 }
 
 /* ---------- 공용 유틸 ---------- */

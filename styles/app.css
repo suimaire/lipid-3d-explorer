@@ -269,6 +269,107 @@ a { color: var(--accent); }
 .label--anno { font-size: 12px; font-weight: 500; }
 .label--hidden { opacity: 0; }
 
+/* ---------------- LEVEL 2 : 화학 구조식 오버레이 ---------------- */
+
+.structure {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 14px;
+  touch-action: none;
+  cursor: grab;
+  overflow: hidden;
+}
+
+/* 패널 자체는 항상 불투명하다.
+   (반투명하게 두면 전환 도중 뒤의 3D 장면이 겹쳐 보여 혼란스럽다.)
+   전환은 안쪽 내용만 부드럽게 나타나게 한다. */
+.structure__legend,
+.structure__figure {
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+
+.structure.is-open .structure__legend,
+.structure.is-open .structure__figure { opacity: 1; }
+
+.structure[hidden] { display: none; }
+.structure:active { cursor: grabbing; }
+
+.structure__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-soft);
+  flex: none;
+}
+
+.structure__key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.structure__key i {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  display: inline-block;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.structure__hint {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+}
+
+.structure__figure {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.structure-svg {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow: visible;
+}
+
+.structure__points {
+  margin: 4px 0 0;
+  padding-left: 1.1em;
+}
+
+.structure__points li { margin-bottom: 4px; }
+
+.structure__note {
+  color: var(--ink-soft);
+  background: var(--accent-tint);
+  border-radius: 6px;
+  padding: 7px 9px;
+  margin-top: 3px !important;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .structure__legend,
+  .structure__figure { transition: none; }
+}
+
 .stage__hint {
   margin: 8px 0 14px;
   font-size: 13px;
