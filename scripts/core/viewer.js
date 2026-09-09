@@ -36,6 +36,8 @@ class Orbit {
     this.dragging = false;
     this.engaged = false;
     this.moved = 0;
+    // 사용자가 직접 회전·확대했는지. 자동 재생이 카메라를 되돌릴지 판단할 때 쓴다.
+    this.userMoved = false;
 
     this._bind();
   }
@@ -64,6 +66,7 @@ class Orbit {
       px = e.clientX;
       py = e.clientY;
       this.moved += Math.abs(dx) + Math.abs(dy);
+      if (this.moved > 4) this.userMoved = true;
       this.goal.theta -= dx * 0.006;
       this.goal.phi = clamp(this.goal.phi - dy * 0.005, this.minPhi, this.maxPhi);
       this.idle = 0;
@@ -92,6 +95,7 @@ class Orbit {
         e.preventDefault();
         const f = Math.exp(e.deltaY * 0.0012);
         this.goal.radius = clamp(this.goal.radius * f, this.minRadius, this.maxRadius);
+        this.userMoved = true;
         this.idle = 0;
       },
       { passive: false }
@@ -111,6 +115,11 @@ class Orbit {
       this.target.copy(this.goalTarget);
     }
     this.idle = 0;
+  }
+
+  /** 자동 재생이 카메라를 다시 잡아도 되는 상태로 되돌린다. */
+  clearUserMoved() {
+    this.userMoved = false;
   }
 
   saveHome() {

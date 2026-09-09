@@ -146,12 +146,32 @@
         <button type="button" class="btn btn--reset" data-m2="reset">Reset</button>
       </div>
 
-      <div class="controls controls--secondary" role="group" aria-label="모듈 2 장면 바로가기">
+      <div class="controls controls--secondary" id="m2-shortcuts-core" role="group" aria-label="모듈 2 장면 바로가기">
         <button type="button" class="btn btn--small" data-m2="goto" data-step="0">PIP2 위치 보기</button>
         <button type="button" class="btn btn--small" data-m2="goto" data-step="1">PLC 작용</button>
         <button type="button" class="btn btn--small" data-m2="goto" data-step="2">절단 애니메이션 재생</button>
         <button type="button" class="btn btn--small" data-m2="compare" aria-pressed="false">DAG / IP3 비교</button>
         <button type="button" class="btn btn--small" data-m2="goto" data-step="5">Ca2+ 방출 보기</button>
+      </div>
+
+      <div class="controls controls--secondary" id="m2-shortcuts-v1a" role="group" aria-label="바소프레신 V1a 확장 장면 바로가기" hidden>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="1">V1a 수용체 결합</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="3">Gq → PLCβ</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="5">PIP2 절단</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="8">Ca2+ 방출</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="11">칼모듈린 → MLCK</button>
+        <button type="button" class="btn btn--small" data-m2="goto" data-step="12">수축 · 전체 복습</button>
+      </div>
+
+      <div class="controls controls--mode" role="group" aria-label="모듈 2 학습 모드">
+        <span class="mode-tag" id="m2-mode-tag" data-mode="core">PIP2 핵심 과정</span>
+        <button type="button" class="btn btn--ext" id="m2-ext-on" data-m2="ext-on" hidden
+                aria-label="생리학적 확장 보기 — 바소프레신 V1a 수용체 경로와 혈관 평활근 수축으로 이동">
+          생리학적 확장 보기
+          <span>Vasopressin V1a → 혈관 평활근 수축</span>
+        </button>
+        <button type="button" class="btn btn--small" id="m2-ext-off" data-m2="ext-off" hidden
+                aria-label="PIP2 핵심 7단계 과정으로 돌아가기">← PIP2 핵심 과정으로 돌아가기</button>
       </div>
 
       <ol class="steps" id="m2-steps" aria-label="단계 목록"></ol>
@@ -175,6 +195,28 @@
             <tr><th scope="row">하는 일</th><td>막에서 PKC를 불러 모음</td><td>ER의 IP3 수용체를 열어 Ca2+ 방출</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="panel__block panel__block--v1a" id="m2-v1a-panel" hidden>
+        <p class="panel__eyebrow">생리학적 확장 — 바소프레신 V1a</p>
+        <p class="panel__caption">
+          지금 보고 있는 것은 <b>바소프레신이 V1a 수용체에 결합하는 경우</b>의 대표적인 신호전달 예시입니다.
+          바소프레신의 모든 작용이 이 경로를 쓰는 것은 아닙니다.
+        </p>
+        <p class="panel__question">막의 작은 지질 하나를 자르는 반응이 어떻게 세포 전체의 행동 변화로 이어질까?</p>
+        <ol class="points points--tiers">
+          <li><b>신호 물질(ligand)</b> — 혈액을 타고 온 바소프레신</li>
+          <li><b>수용체(receptor)</b> — 원형질막의 V1a (GPCR)</li>
+          <li><b>신호 전달(transduction)</b> — Gq/11 → PLCβ</li>
+          <li><b>2차 전령(second messenger)</b> — PIP2에서 잘려 나온 IP3와 DAG, 그리고 ER에서 나온 Ca2+</li>
+          <li><b>단백질 활성화</b> — Ca2+–칼모듈린 → MLCK (그리고 병렬로 DAG + Ca2+ → PKC)</li>
+          <li><b>세포 반응(cellular response)</b> — 미오신 경쇄 인산화 → 평활근 수축 → 혈관 수축</li>
+        </ol>
+        <p class="note note--inline">
+          ※ 수축의 주된 경로는 <b>Ca2+ → 칼모듈린 → MLCK → 미오신 경쇄 인산화</b>입니다.
+          PKC는 DAG와 Ca2+에 의해 활성화되는 <b>병렬 가지</b>로, 여러 표적 단백질을 인산화해 수축 신호와
+          다른 세포 반응을 함께 조절합니다. PKC가 MLCK를 직접 켜는 것이 아닙니다.
+        </p>
       </div>
 
       <div class="panel__block">
@@ -201,6 +243,14 @@
       <p class="note">
         ※ 여기 보여 주는 흐름은 Gq–PLC-beta 계열의 <b>대표적인(canonical) 경로 예시</b>를 단순화한 것입니다.
         PLC와 IP3 수용체에는 여러 아형이 있고, 세포 종류에 따라 반응의 세부 내용은 달라집니다.
+      </p>
+
+      <p class="note note--warn" id="m2-v2-note" hidden>
+        <b>주의 — V1a와 V2는 다른 경로입니다.</b>
+        여기서는 <b>V1a 수용체</b>의 Gq–PLCβ 경로를 보여 줍니다.
+        신장 집합관에서 물 재흡수를 증가시키는 바소프레신 <b>V2 수용체</b>는
+        Gs–adenylyl cyclase–cAMP–PKA 경로를 주로 사용하며, <b>AQP2</b>의 막 삽입을 촉진합니다.
+        "바소프레신 = PIP2 경로"라고 일반화하지 않도록 주의하세요.
       </p>
     </aside>
   </div>

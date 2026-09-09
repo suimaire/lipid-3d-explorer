@@ -1,10 +1,16 @@
 /* ============================================================
    모듈 2 — 세포막 인지질과 PIP2 신호전달
    PIP2 → (PLC) → DAG(막에 남음) + IP3(세포질로 확산) → ER Ca2+ 방출
+
+   두 가지 모드가 같은 장면을 공유한다.
+     core : PIP2 핵심 7단계 (지질 하나가 잘려 두 신호가 되는 과정)
+     v1a  : 생리학적 확장 — 바소프레신 V1a 수용체 → 혈관 평활근 수축
+            (scripts/modules/pip2-vasopressin.js 가 위·아래에 붙는 부분을 만든다)
    ============================================================ */
 
-import { Viewer, THREE, mat, easeInOut, easeOut } from "../core/viewer.js";
+import { Viewer, THREE, mat, easeInOut, easeOut, REDUCED_MOTION } from "../core/viewer.js";
 import { COLOR, buildLipid, rng } from "../core/lipids.js";
+import { createVasopressinScene } from "./pip2-vasopressin.js";
 
 const PM_OUTER_Y = 6.6;
 const PM_INNER_Y = 1.2;
@@ -15,12 +21,37 @@ const ROWS = 3;
 const SX = 1.06;
 const SZ = 1.06;
 
+// 확장 모드에서만 켜지는 좌측 연장 구간 — "세포 안"이라는 느낌을 넓혀 준다
+const WIDE_PM_COLS = [-5, -4, -3, -2, -1];
+const WIDE_ER_COLS = [-6, -5, -4, -3, -2, -1];
+
 const C_DAG = 0xc98a2e;
 const C_IP3 = 0xa8386c;
 const C_PLC = 0x7c8fa0;
 const C_PKC = 0x3f7d6b;
 const C_CA = 0x2f8f7a;
 const C_RECEPTOR = 0x6f8494;
+
+/* ------------------------------------------------------------
+   애니메이션 타이밍 — 값은 모두 여기 한곳에서 관리한다.
+   수업에서 교사가 설명을 붙일 수 있도록 예전(단계당 3.6초 고정)보다
+   약 1.5~1.9배 느리게 잡았다. 각 단계는
+       "분자가 움직이는 시간(motion)" + "결과를 보는 시간(hold)"
+   으로 나뉘고, motion 은 그 단계에서 실제로 만들어진 tween 중
+   가장 긴 것으로 자동 계산한다.
+   prefers-reduced-motion 환경에서는 이동 시간을 0에 가깝게 두고
+   hold 만 남겨, 상태 변화는 그대로 확인할 수 있게 한다.
+   ------------------------------------------------------------ */
+export const PIP2_TIMING = {
+  cameraFly: REDUCED_MOTION ? 0 : 1.0, // ▶ 재생 시 overview 로 넘어가는 시간
+  move: REDUCED_MOTION ? 0.001 : 1.7, // 분자 이동
+  channelOpen: REDUCED_MOTION ? 0.001 : 1.2, // IP3 수용체가 열리는 시간
+  release: REDUCED_MOTION ? 0.001 : 2.0, // Ca2+ 하나가 lumen → 세포질로 가는 시간
+  releaseStagger: REDUCED_MOTION ? 0 : 0.13, // Ca2+ 사이의 시간차
+  hold: 3.8, // 단계가 끝난 뒤 학생이 결과를 보는 시간
+  minMotion: REDUCED_MOTION ? 0 : 1.6, // 움직임이 없는 단계에도 주는 최소 시간
+};
+const T = PIP2_TIMING;
 
 const STEPS = [
   {
@@ -82,17 +113,39 @@ export function createPip2Module() {
     text: document.getElementById("m2-caption-text"),
     steps: document.getElementById("m2-steps"),
     compare: document.getElementById("m2-compare"),
+    modeTag: document.getElementById("m2-mode-tag"),
+    extOn: document.getElementById("m2-ext-on"),
+    extOff: document.getElementById("m2-ext-off"),
+    coreShortcuts: document.getElementById("m2-shortcuts-core"),
+    v1aShortcuts: document.getElementById("m2-shortcuts-v1a"),
+    v1aPanel: document.getElementById("m2-v1a-panel"),
+    v2Note: document.getElementById("m2-v2-note"),
   };
-
-  buildStepList(els.steps, STEPS, (i) => go(i));
 
   let step = 0;
   let playing = false;
   let playTimer = 0;
+  let mode = "core"; // "core" | "v1a"
+  let ext = null;
+  let unlocked = false;
+
+  buildStepList(els.steps, STEPS, (i) => {
+    playing = false;
+    go(i);
+  });
+
+  function activeSteps() {
+    return mode === "v1a" && ext ? ext.steps : STEPS;
+  }
+
+  function activePlan() {
+    return mode === "v1a" && ext ? ext.plan : PLAN;
+  }
 
   function renderCaption() {
-    const s = STEPS[step];
-    els.stepNo.textContent = `${step + 1} / ${STEPS.length}`;
+    const list = activeSteps();
+    const s = list[step];
+    els.stepNo.textContent = `${step + 1} / ${list.length}`;
     els.title.textContent = s.title;
     els.text.textContent = s.text;
     markSteps(els.steps, step);
@@ -113,19 +166,44 @@ export function createPip2Module() {
   // --- 원형질막 ---
   const pm = new THREE.Group();
   root.add(pm);
+  // 확장 모드에서만 보이는 좌측 연장 구간
+  const wide = new THREE.Group();
+  wide.visible = false;
+  root.add(wide);
+
   const outerMix = ["PC", "PC", "SM", "PC", "PE", "SM", "PC"];
   const innerMix = ["PE", "PC", "PS", "PE", "PC", "PE", "PS"];
   // 앞줄에 두어 다른 지질에 가리지 않게 한다
   const PIP2_SLOT = { c: Math.floor(COLS / 2), r: ROWS - 1 };
   const PIP2_Z = (PIP2_SLOT.r - (ROWS - 1) / 2) * SZ;
 
+  // 확장 모드에서 V1a 수용체가 들어갈 칸의 지질은 잠시 숨겨야 한다
+  const pmColumns = new Map();
+
+  function pmX(c) {
+    return (c - (COLS - 1) / 2) * SX;
+  }
+
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      const x = (c - (COLS - 1) / 2) * SX;
+      const x = pmX(c);
       const z = (r - (ROWS - 1) / 2) * SZ;
-      place(pm, outerMix[(c * 3 + r) % outerMix.length], x, PM_OUTER_Y, z, 0, 1);
-      if (c === PIP2_SLOT.c && r === PIP2_SLOT.r) continue; // PIP2 자리
-      place(pm, innerMix[(c * 5 + r) % innerMix.length], x, PM_INNER_Y, z, Math.PI, 1);
+      const col = pmColumns.get(c) || [];
+      col.push(place(pm, outerMix[(c * 3 + r) % outerMix.length], x, PM_OUTER_Y, z, 0, 1));
+      if (!(c === PIP2_SLOT.c && r === PIP2_SLOT.r)) {
+        col.push(place(pm, innerMix[(c * 5 + r) % innerMix.length], x, PM_INNER_Y, z, Math.PI, 1));
+      }
+      pmColumns.set(c, col);
+    }
+  }
+
+  for (const c of WIDE_PM_COLS) {
+    for (let r = 0; r < ROWS; r++) {
+      const x = pmX(c);
+      const z = (r - (ROWS - 1) / 2) * SZ;
+      const ci = ((c % 7) + 7) % 7;
+      place(wide, outerMix[(ci * 3 + r) % outerMix.length], x, PM_OUTER_Y, z, 0, 1);
+      place(wide, innerMix[(ci * 5 + r) % innerMix.length], x, PM_INNER_Y, z, Math.PI, 1);
     }
   }
 
@@ -144,6 +222,15 @@ export function createPip2Module() {
     }
   }
   const RECEPTOR_X = (REC_SLOT - (ER_COLS - 1) / 2) * SX;
+
+  for (const c of WIDE_ER_COLS) {
+    for (let r = 0; r < ROWS; r++) {
+      const x = (c - (ER_COLS - 1) / 2) * SX;
+      const z = (r - (ROWS - 1) / 2) * SZ;
+      place(wide, "PC", x, ER_CYTO_Y, z, 0, 0.85);
+      place(wide, "PE", x, ER_LUMEN_Y, z, Math.PI, 0.85);
+    }
+  }
 
   function place(parent, id, x, y, z, rotZ, scale) {
     const g = buildLipid(id, { scale });
@@ -216,7 +303,7 @@ export function createPip2Module() {
     root.add(m);
     ions.push({ mesh: m, home, released: false, phase: rand() * 6.28 });
   }
-  const RELEASED = ions.slice(0, 9).map((ion, i) => {
+  const RELEASED = ions.slice(0, 9).map((ion) => {
     ion.target = new THREE.Vector3(
       RECEPTOR_X + (rand() - 0.5) * 5.5,
       -3.4 + rand() * 3.2,
@@ -225,9 +312,12 @@ export function createPip2Module() {
     return ion;
   });
 
-  // --- 영역 배경(세포 바깥 / 세포질 / ER 내부) ---
-  addZonePlate(root, PM_OUTER_Y + 2.4, 0xdce9f1);
-  addZonePlate(root, ER_LUMEN_Y - 2.2, 0xe4eee9);
+  /* --- 영역 띠 (세포 바깥 / 세포질 / ER lumen) ---
+     막 두 장 사이의 공간이 각각 무엇인지 배경으로 구분해 준다.
+     아주 옅은 색만 쓰고 gradient·glow 는 쓰지 않는다. */
+  addZoneBand(root, PM_OUTER_Y + 0.4, 13.6, 0xdce9f1, 0.5); // 세포 바깥
+  addZoneBand(root, ER_CYTO_Y, PM_INNER_Y, 0xeef4f7, 0.55); // 세포질
+  addZoneBand(root, -13.6, ER_LUMEN_Y, 0xe4eee9, 0.5); // ER 내부
 
   /* ---------------- 라벨 ---------------- */
 
@@ -249,32 +339,46 @@ export function createPip2Module() {
     pkc: L.add("PKC 활성화 (DAG + Ca2+)", { anchor: pkc, offset: new THREE.Vector3(0, -1.4, 0), variant: "accent", group: "pkc" }),
   };
 
+  const PLC_LABEL = {
+    core: "PLC (phospholipase C)",
+    v1a: "PLCβ — Gαq가 활성화한다",
+  };
+
   /* ---------------- 단계별 목표 상태 ---------------- */
 
   const HOME = { radius: 24, theta: 0.4, phi: 1.44, target: new THREE.Vector3(0, -0.6, 0) };
+
+  /* 자동 재생용 overview.
+     원형질막(y ≈ 6.6) · 세포질 · ER 막(y ≈ −5.0) · ER lumen(y ≈ −11.8)이
+     한 화면에 들어가야 한다. 세로로 약 22 단위가 필요하고,
+     수직 화각 42° 기준 거리 ≈ 11.1 / tan(21°) ≈ 29 이다.
+     기본 시점(HOME radius 24)보다 약 20% 넓은 영역을 본다. */
+  const OVERVIEW = { radius: 29, phi: 1.5, theta: 0.36, target: new THREE.Vector3(0.2, -1.2, 0) };
 
   const PLAN = [
     {
       // 0
       plc: [4.2, -2.4, 1.6],
-      pip2: true, dag: false, ip3: null,
-      open: 0, release: false, pkc: null,
+      pip2: true, dag: null, ip3: null,
+      open: 0, release: false, pkc: null, focus: pip2,
       cam: { radius: 15, phi: 1.46, theta: 0.42, target: new THREE.Vector3(0, 3.4, 0) },
       groups: ["zone", "s0"],
     },
     {
       // 1
       plc: [0.7, -0.9, 0.9],
-      pip2: true, dag: false, ip3: null,
-      open: 0, release: false, pkc: null,
+      pip2: true, dag: null, ip3: null,
+      open: 0, release: false, pkc: null, focus: plc,
       cam: { radius: 15, phi: 1.46, theta: 0.5, target: new THREE.Vector3(0.3, 2.6, 0) },
       groups: ["zone", "s0", "plc"],
     },
     {
       // 2
       plc: [1.7, -1.3, 1.9],
-      pip2: false, dag: [0, PM_INNER_Y + 0.1, PIP2_Z], ip3: [-1.1, -0.5, PIP2_Z + 0.4],
-      open: 0, release: false, pkc: null,
+      pip2: false,
+      dag: [0, PM_INNER_Y + 0.1, PIP2_Z], dagFrom: [0, PM_INNER_Y + 0.1, PIP2_Z],
+      ip3: [-1.1, -0.5, PIP2_Z + 0.4], ip3From: [0, PM_INNER_Y - 0.5, PIP2_Z],
+      open: 0, release: false, pkc: null, focus: ip3,
       cam: { radius: 15, phi: 1.46, theta: 0.5, target: new THREE.Vector3(0.2, 2.4, 0) },
       groups: ["zone", "plc", "cut", "dagL", "ip3L"],
     },
@@ -282,7 +386,7 @@ export function createPip2Module() {
       // 3
       plc: [3.0, -2.0, 1.4],
       pip2: false, dag: [-1.6, PM_INNER_Y + 0.1, PIP2_Z], ip3: [0.9, -2.6, 0.9],
-      open: 0, release: false, pkc: null,
+      open: 0, release: false, pkc: null, focus: ip3,
       cam: { radius: 21, phi: 1.44, theta: 0.42, target: new THREE.Vector3(0, 0.6, 0) },
       groups: ["zone", "dagL", "ip3L"],
     },
@@ -290,7 +394,7 @@ export function createPip2Module() {
       // 4
       plc: [3.6, -2.2, 1.6],
       pip2: false, dag: [-2.1, PM_INNER_Y + 0.1, PIP2_Z], ip3: [RECEPTOR_X, -3.0, 0.15],
-      open: 0, release: false, pkc: null,
+      open: 0, release: false, pkc: null, focus: receptor,
       cam: { radius: 20, phi: 1.44, theta: 0.34, target: new THREE.Vector3(RECEPTOR_X + 0.6, -2.2, 0) },
       groups: ["zone", "dagL", "ip3L", "rec"],
     },
@@ -298,7 +402,7 @@ export function createPip2Module() {
       // 5
       plc: [3.6, -2.2, 1.6],
       pip2: false, dag: [-2.1, PM_INNER_Y + 0.1, PIP2_Z], ip3: [RECEPTOR_X, -3.2, 0.15],
-      open: 1, release: true, pkc: null,
+      open: 1, release: true, pkc: null, focus: receptor,
       cam: { radius: 21, phi: 1.44, theta: 0.34, target: new THREE.Vector3(RECEPTOR_X + 0.4, -4.2, 0) },
       groups: ["zone", "rec", "ca"],
     },
@@ -306,7 +410,7 @@ export function createPip2Module() {
       // 6
       plc: [3.8, -2.4, 1.8],
       pip2: false, dag: [-2.4, PM_INNER_Y + 0.1, PIP2_Z], ip3: [RECEPTOR_X, -3.2, 0.15],
-      open: 1, release: true, pkc: [-2.8, -0.15, PIP2_Z - 0.5],
+      open: 1, release: true, pkc: [-2.8, -0.15, PIP2_Z - 0.5], focus: pkc,
       cam: { radius: 25, phi: 1.44, theta: 0.42, target: new THREE.Vector3(-1.0, -0.6, 0) },
       groups: ["zone", "dagL", "ca", "pkc"],
     },
@@ -316,54 +420,95 @@ export function createPip2Module() {
   viewer.controls.frame(HOME, true);
   viewer.controls.saveHome();
 
+  /* ---------------- 확장 장면 ---------------- */
+
+  ext = createVasopressinScene({
+    root,
+    labels: L,
+    geom: { PM_OUTER_Y, PM_INNER_Y, ER_CYTO_Y, ER_LUMEN_Y, PIP2_Z, RECEPTOR_X, SX, COLS },
+    refs: { pip2, dag, ip3, plc, pkc, receptor },
+    membrane: {
+      setWide(on) {
+        wide.visible = on;
+      },
+      setColumnHidden(c, hidden) {
+        for (const g of pmColumns.get(c) || []) g.visible = !hidden;
+      },
+    },
+  });
+
+  /* ---------------- tween / 카메라 ---------------- */
+
   const tweens = [];
+  let camTween = null;
   let openAmount = 0;
   let released = false;
+  let stageDwell = T.hold;
+  let focusObj = null;
+  const baseScale = new WeakMap();
 
-  function tw(dur, fn) {
-    tweens.push({ t: 0, dur, fn });
+  /** key 를 주면 같은 대상에 대한 이전 tween 을 밀어낸다(둘이 서로 싸우지 않게). */
+  function tw(dur, fn, key) {
+    if (key) {
+      const i = tweens.findIndex((t) => t.key === key);
+      if (i >= 0) tweens.splice(i, 1);
+    }
+    tweens.push({ t: 0, dur: Math.max(dur, 0.001), fn, key });
   }
 
+  /** 카메라를 정해진 시간 동안 부드럽게 옮긴다(자동 재생 진입용). */
+  function flyCamera(to, dur) {
+    const c = viewer.controls;
+    if (!dur) {
+      camTween = null;
+      c.frame(to, true);
+      return;
+    }
+    const from = { radius: c.radius, theta: c.theta, phi: c.phi, target: c.target.clone() };
+    let dTheta = to.theta - from.theta;
+    while (dTheta > Math.PI) dTheta -= Math.PI * 2;
+    while (dTheta < -Math.PI) dTheta += Math.PI * 2;
+    camTween = { t: 0, dur, from, to, dTheta, tmp: new THREE.Vector3() };
+  }
+
+  function overviewCam() {
+    return mode === "v1a" ? ext.overview : OVERVIEW;
+  }
+
+  /** ▶ 재생: 현재 위치에서 전체가 보이는 overview 로 넘어간다. */
+  function enterOverview() {
+    flyCamera(overviewCam(), T.cameraFly);
+    viewer.controls.clearUserMoved();
+  }
+
+  function setFocus(obj) {
+    if (focusObj && focusObj !== obj) {
+      const b = baseScale.get(focusObj);
+      if (b !== undefined) focusObj.scale.setScalar(b);
+    }
+    focusObj = obj || null;
+    if (focusObj && !baseScale.has(focusObj)) baseScale.set(focusObj, focusObj.scale.x);
+  }
+
+  /* ---------------- 단계 이동 ---------------- */
+
   function go(i, animate = true) {
-    step = Math.max(0, Math.min(STEPS.length - 1, i));
-    const p = PLAN[step];
+    const steps = activeSteps();
+    const plan = activePlan();
+    step = Math.max(0, Math.min(steps.length - 1, i));
+    const p = plan[step];
     tweens.length = 0;
 
     moveTo(plc, p.plc, animate);
     pip2.visible = p.pip2;
-
-    if (p.dag) {
-      if (!dag.visible) {
-        dag.visible = true;
-        dag.position.set(p.dag[0], p.dag[1], p.dag[2]);
-      } else moveTo(dag, p.dag, animate);
-    } else {
-      dag.visible = false;
-    }
-
-    if (p.ip3) {
-      if (!ip3.visible) {
-        ip3.visible = true;
-        ip3.position.set(p.ip3[0], p.ip3[1], p.ip3[2]);
-      } else moveTo(ip3, p.ip3, animate);
-    } else {
-      ip3.visible = false;
-    }
-
-    if (p.pkc) {
-      if (!pkc.visible) {
-        pkc.visible = true;
-        pkc.position.set(4.6, -3.6, -1.8);
-      }
-      moveTo(pkc, p.pkc, animate);
-    } else {
-      pkc.visible = false;
-    }
+    applyMover(dag, p.dag, p.dagFrom, animate);
+    applyMover(ip3, p.ip3, p.ip3From, animate);
+    applyMover(pkc, p.pkc, [4.6, -3.6, -1.8], animate);
 
     const openFrom = openAmount;
     const openTo = p.open;
     if (animate && openFrom !== openTo) {
-      tw(0.6, (t) => {
+      tw(T.channelOpen, (t) => {
         openAmount = openFrom + (openTo - openFrom) * easeInOut(t);
         applyOpen();
       });
@@ -373,10 +518,39 @@ export function createPip2Module() {
     }
 
     setRelease(p.release, animate);
+
+    if (mode === "v1a") {
+      ext.apply(step, { animate, tw, moveTo, moveIons, timing: T });
+    }
+
     L.only(p.groups);
-    viewer.controls.frame(p.cam);
+    setFocus(p.focus);
+
+    // 자동 재생 중에는 카메라를 건드리지 않는다(overview 유지).
+    // 수동 탐색일 때에만 단계별 시점으로 옮긴다.
+    if (!playing) viewer.controls.frame(p.cam);
+
+    // 이 단계에서 실제로 만들어진 움직임 중 가장 긴 것 + 결과를 보는 시간
+    let motion = 0;
+    for (const t of tweens) motion = Math.max(motion, t.dur);
+    stageDwell = Math.max(motion, T.minMotion) + T.hold;
+
+    if (step === steps.length - 1 && mode === "core") unlockExtension();
     renderCaption();
     syncPlayButton();
+  }
+
+  function applyMover(obj, target, spawnFrom, animate) {
+    if (!target) {
+      obj.visible = false;
+      return;
+    }
+    if (!obj.visible) {
+      obj.visible = true;
+      const s = spawnFrom || target;
+      obj.position.set(s[0], s[1], s[2]);
+    }
+    moveTo(obj, target, animate);
   }
 
   function moveTo(obj, arr, animate) {
@@ -387,7 +561,7 @@ export function createPip2Module() {
     }
     const from = obj.position.clone();
     if (from.distanceTo(to) < 0.001) return;
-    tw(0.9, (t) => obj.position.lerpVectors(from, to, easeInOut(t)));
+    tw(T.move, (t) => obj.position.lerpVectors(from, to, easeInOut(t)));
   }
 
   function applyOpen() {
@@ -408,19 +582,122 @@ export function createPip2Module() {
       const mid = new THREE.Vector3(RECEPTOR_X, ER_CYTO_Y - 1.2, 0);
       const to = on ? ion.target : ion.home;
       ion.released = on;
+      ion.bound = false;
       if (!animate) {
         ion.mesh.position.copy(to);
         return;
       }
-      const delay = i * 0.09;
-      tw(1.6 + delay, (t) => {
-        const u = Math.max(0, Math.min(1, (t * (1.6 + delay) - delay) / 1.2));
-        const e = easeOut(u);
-        // lumen → 통로 → 세포질 (2구간 경로)
-        if (e < 0.5) ion.mesh.position.lerpVectors(from, mid, e * 2);
-        else ion.mesh.position.lerpVectors(mid, to, (e - 0.5) * 2);
-      });
+      const delay = i * T.releaseStagger;
+      const total = T.release + delay;
+      tw(
+        total,
+        (t) => {
+          const u = Math.max(0, Math.min(1, (t * total - delay) / T.release));
+          const e = easeOut(u);
+          // lumen → 통로 → 세포질 (2구간 경로)
+          if (e < 0.5) ion.mesh.position.lerpVectors(from, mid, e * 2);
+          else ion.mesh.position.lerpVectors(mid, to, (e - 0.5) * 2);
+        },
+        `ion${i}`
+      );
     });
+  }
+
+  /** Ca2+ 몇 개를 특정 지점(칼모듈린)으로 보낸다. count=0 이면 원래 자리로 되돌린다. */
+  function moveIons(count, at, animate) {
+    RELEASED.forEach((ion, i) => {
+      const bind = i < count;
+      if (bind === !!ion.bound) return;
+      ion.bound = bind;
+      ion.released = !bind; // 붙잡힌 이온은 더 이상 떠다니지 않는다
+      const to = bind
+        ? new THREE.Vector3(
+            at[0] + (i % 2 ? 0.55 : -0.55),
+            at[1] + (i < 2 ? 0.34 : -0.34),
+            at[2] + 0.35
+          )
+        : ion.target.clone();
+      if (!animate) {
+        ion.mesh.position.copy(to);
+        return;
+      }
+      const from = ion.mesh.position.clone();
+      // 아직 lumen 에 있는 이온이라면 통로를 거쳐서 나온다(막을 뚫고 가지 않도록)
+      const via = from.y < ER_CYTO_Y ? new THREE.Vector3(RECEPTOR_X, ER_CYTO_Y - 1.2, 0) : null;
+      tw(
+        T.move,
+        (t) => {
+          const e = easeInOut(t);
+          if (!via) ion.mesh.position.lerpVectors(from, to, e);
+          else if (e < 0.45) ion.mesh.position.lerpVectors(from, via, e / 0.45);
+          else ion.mesh.position.lerpVectors(via, to, (e - 0.45) / 0.55);
+        },
+        `ion${i}`
+      );
+    });
+  }
+
+  function resetIons() {
+    released = false;
+    for (const ion of ions) {
+      ion.released = false;
+      ion.bound = false;
+      ion.mesh.position.copy(ion.home);
+    }
+  }
+
+  /* ---------------- 모드 전환 ---------------- */
+
+  function unlockExtension() {
+    if (unlocked) return;
+    unlocked = true;
+    if (els.extOn) els.extOn.hidden = false;
+  }
+
+  function setMode(next) {
+    if (mode === next) return;
+    playing = false;
+    playTimer = 0;
+    tweens.length = 0;
+    camTween = null;
+    mode = next;
+
+    // 두 모드가 같은 물체를 공유하므로 넘어갈 때마다 장면을 깨끗이 되돌린다
+    resetIons();
+    openAmount = 0;
+    applyOpen();
+    dag.visible = false;
+    ip3.visible = false;
+    pkc.visible = false;
+    pip2.visible = true;
+    setFocus(null);
+
+    ext.setActive(mode === "v1a");
+    L.setText(labels.plc, mode === "v1a" ? PLC_LABEL.v1a : PLC_LABEL.core);
+
+    buildStepList(els.steps, activeSteps(), (i) => {
+      playing = false;
+      go(i);
+    });
+
+    if (els.modeTag) {
+      els.modeTag.dataset.mode = mode;
+      els.modeTag.textContent =
+        mode === "v1a" ? "생리학적 확장 — 바소프레신 V1a" : "PIP2 핵심 과정";
+    }
+    if (els.extOn) els.extOn.hidden = mode === "v1a" || !unlocked;
+    if (els.extOff) els.extOff.hidden = mode !== "v1a";
+    if (els.coreShortcuts) els.coreShortcuts.hidden = mode === "v1a";
+    if (els.v1aShortcuts) els.v1aShortcuts.hidden = mode !== "v1a";
+    if (els.v1aPanel) els.v1aPanel.hidden = mode !== "v1a";
+    if (els.v2Note) els.v2Note.hidden = mode !== "v1a";
+    if (els.compare) els.compare.hidden = true;
+    const compareBtn = document.querySelector('[data-m2="compare"]');
+    if (compareBtn) compareBtn.setAttribute("aria-pressed", "false");
+
+    go(0, false);
+    viewer.controls.frame(activePlan()[0].cam, true);
+    viewer.controls.clearUserMoved();
   }
 
   /* ---------------- 프레임 ---------------- */
@@ -428,6 +705,25 @@ export function createPip2Module() {
   let clock = 0;
   viewer.onUpdate((dt) => {
     clock += dt;
+
+    if (camTween) {
+      camTween.t += dt;
+      const p = Math.min(1, camTween.t / camTween.dur);
+      const e = easeInOut(p);
+      const f = camTween.from;
+      const to = camTween.to;
+      viewer.controls.frame(
+        {
+          radius: f.radius + (to.radius - f.radius) * e,
+          theta: f.theta + camTween.dTheta * e,
+          phi: f.phi + (to.phi - f.phi) * e,
+          target: camTween.tmp.lerpVectors(f.target, to.target, e),
+        },
+        true
+      );
+      if (p >= 1) camTween = null;
+    }
+
     for (let i = tweens.length - 1; i >= 0; i--) {
       const t = tweens[i];
       t.t += dt;
@@ -435,21 +731,32 @@ export function createPip2Module() {
       t.fn(p);
       if (p >= 1) tweens.splice(i, 1);
     }
+
     // 세포질로 나온 Ca2+ 는 가볍게 떠다닌다
     for (const ion of ions) {
       if (!ion.released) continue;
       ion.mesh.position.x += Math.sin(clock * 0.9 + ion.phase) * dt * 0.16;
       ion.mesh.position.y += Math.cos(clock * 0.7 + ion.phase) * dt * 0.12;
     }
+
     // 막에 남은 DAG 의 lateral movement
-    if (dag.visible && step >= 3 && !tweens.length) {
+    const lateralFrom = mode === "v1a" ? 6 : 3;
+    if (dag.visible && step >= lateralFrom && !tweens.length) {
       dag.position.z = PIP2_Z + Math.sin(clock * 0.5) * 0.45;
     }
+
+    // 자동 재생에서는 카메라를 크게 움직이는 대신 지금 볼 분자만 살짝 강조한다
+    if (focusObj) {
+      const b = baseScale.get(focusObj) ?? 1;
+      const pulse = playing && !REDUCED_MOTION ? 1 + Math.sin(clock * 2.2) * 0.035 : 1;
+      focusObj.scale.setScalar(b * pulse);
+    }
+
     if (playing) {
       playTimer += dt;
-      if (playTimer > 3.6) {
+      if (playTimer > stageDwell) {
         playTimer = 0;
-        if (step >= STEPS.length - 1) {
+        if (step >= activeSteps().length - 1) {
           playing = false;
           syncPlayButton();
         } else go(step + 1);
@@ -469,34 +776,59 @@ export function createPip2Module() {
       if (a === "play") {
         playing = !playing;
         playTimer = 0;
-        if (playing && step === STEPS.length - 1) go(0);
+        if (playing) {
+          if (step === activeSteps().length - 1) go(0);
+          // 재생 중에는 전체 공간 관계가 계속 보이도록 멀리서 본다
+          enterOverview();
+        }
         syncPlayButton();
       }
       if (a === "next") { playing = false; go(step + 1); }
       if (a === "prev") { playing = false; go(step - 1); }
       if (a === "goto") { playing = false; go(Number(b.dataset.step)); }
+      if (a === "ext-on") { setMode("v1a"); }
+      if (a === "ext-off") { setMode("core"); }
       if (a === "compare") {
         const on = els.compare.hidden;
         els.compare.hidden = !on;
         compareBtn.setAttribute("aria-pressed", String(on));
-        if (on) { playing = false; go(3); }
+        if (on) { playing = false; go(mode === "v1a" ? 6 : 3); }
       }
       if (a === "labels") {
         const on = b.getAttribute("aria-pressed") !== "true";
         b.setAttribute("aria-pressed", String(on));
         viewer.labels.setEnabled(on);
       }
-      if (a === "reset") {
-        playing = false;
-        els.compare.hidden = true;
-        compareBtn.setAttribute("aria-pressed", "false");
-        go(0, false);
-        viewer.controls.frame(PLAN[0].cam, true);
-        viewer.labels.setEnabled(true);
-        document.querySelector('[data-m2="labels"]').setAttribute("aria-pressed", "true");
-      }
+      if (a === "reset") resetAll();
     });
   });
+
+  function resetAll() {
+    playing = false;
+    playTimer = 0;
+    tweens.length = 0;
+    camTween = null;
+    setFocus(null);
+    if (mode !== "core") {
+      setMode("core"); // 확장 모드 종료 + 장면 초기화 + go(0,false)
+    } else {
+      resetIons();
+      dag.visible = false;
+      ip3.visible = false;
+      pkc.visible = false;
+      pip2.visible = true;
+      openAmount = 0;
+      applyOpen();
+      go(0, false);
+    }
+    els.compare.hidden = true;
+    compareBtn.setAttribute("aria-pressed", "false");
+    viewer.controls.frame(PLAN[0].cam, true);
+    viewer.controls.clearUserMoved();
+    viewer.labels.setEnabled(true);
+    document.querySelector('[data-m2="labels"]').setAttribute("aria-pressed", "true");
+    syncPlayButton();
+  }
 
   function syncPlayButton() {
     playBtn.textContent = playing ? "❚❚ 일시정지" : "▶ 재생";
@@ -510,7 +842,8 @@ export function createPip2Module() {
     document.querySelectorAll("[data-m2]").forEach((b) => {
       b.addEventListener("click", () => {
         const a = b.dataset.m2;
-        if (a === "next") { step = Math.min(STEPS.length - 1, step + 1); renderCaption(); }
+        const n = activeSteps().length;
+        if (a === "next") { step = Math.min(n - 1, step + 1); renderCaption(); }
         if (a === "prev") { step = Math.max(0, step - 1); renderCaption(); }
         if (a === "goto") { step = Number(b.dataset.step); renderCaption(); }
         if (a === "reset") { step = 0; renderCaption(); }
@@ -590,13 +923,16 @@ function buildBlob(color, scale) {
   return g;
 }
 
-function addZonePlate(root, y, color) {
+/** 두 높이 사이를 아주 옅게 칠해 "세포 바깥 / 세포질 / ER 내부"를 구분한다. */
+function addZoneBand(root, yBottom, yTop, color, opacity) {
+  const h = yTop - yBottom;
   const p = new THREE.Mesh(
-    new THREE.PlaneGeometry(26, 12),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.28, depthWrite: false })
+    new THREE.PlaneGeometry(26, h),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false })
   );
-  p.position.set(0, y, -6.5);
+  p.position.set(0, (yTop + yBottom) / 2, -7.2);
   root.add(p);
+  return p;
 }
 
 /* ---------------- 단계 목록 UI ---------------- */
@@ -608,9 +944,14 @@ export function buildStepList(host, steps, onClick) {
         `<li data-i="${i}"><button type="button"><b>${s.tag}</b>${s.short}</button></li>`
     )
     .join("");
+  // 목록을 다시 그려도 클릭 처리기가 겹쳐 붙지 않게 한 번만 연결하고,
+  // 처리기 자체는 가장 최근 것으로 바꿔 둔다
+  host._onStepClick = onClick;
+  if (host.dataset.wired === "true") return;
+  host.dataset.wired = "true";
   host.addEventListener("click", (e) => {
     const li = e.target.closest("li[data-i]");
-    if (li) onClick(Number(li.dataset.i));
+    if (li) host._onStepClick(Number(li.dataset.i));
   });
 }
 
