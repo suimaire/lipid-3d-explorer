@@ -359,7 +359,21 @@
 <footer class="site-footer">
   <p>HAFS 생명과학 실험실 · 생화학 특강 보조자료 — 지질의 생화학 3D 탐색기</p>
   <p class="site-footer__meta">Three.js 기반 정적 웹페이지 · 외부 API 없음 · <a href="https://suimaire.github.io/">수업 포털로 돌아가기</a></p>
+  <p class="site-footer__meta page-views" data-page-views hidden></p>
 </footer>
+
+<!-- 조회수: 포털 공통 모듈(suimaire.github.io/assets/js/page-views.js). production 에서만 로드되며 실패해도 3D 뷰어와 무관 -->
+<script>
+  (function () {
+    try {
+      if (location.hostname !== 'suimaire.github.io' && !/[?&]page-views=/.test(location.search)) return;
+      var s = document.createElement('script');
+      s.type = 'module';
+      s.src = 'https://suimaire.github.io/assets/js/page-views.js';
+      document.head.appendChild(s);
+    } catch (e) {}
+  })();
+</script>
 
 <noscript>
   <p style="padding:24px;text-align:center">이 페이지는 3D 애니메이션을 위해 JavaScript가 필요합니다.</p>
