@@ -833,6 +833,8 @@ a { color: var(--accent); }
 }
 
 .site-footer p { margin: 0 0 4px; }
+.site-footer__brand { color: var(--ink-soft); font-weight: 700; }
+.site-footer .site-footer__credit { font-size: 12px; margin-bottom: 10px; }
 .site-footer__meta { font-size: 12.5px; }
 
 /* ---------------- responsive ---------------- */
