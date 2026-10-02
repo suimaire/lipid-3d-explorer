@@ -269,6 +269,69 @@ a { color: var(--accent); }
 .label--anno { font-size: 12px; font-weight: 500; }
 .label--hidden { opacity: 0; }
 
+/* Module 1 scale navigation stays separate from the existing teaching modes. */
+.membrane-scale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.membrane-scale__title { font-size: 12px; font-weight: 700; color: var(--ink-soft); margin-right: 3px; }
+.membrane-scale__arrow, .membrane-scale__molecule { font-size: 12px; color: var(--ink-faint); }
+.membrane-scale__molecule.is-current { color: var(--accent); font-weight: 700; }
+.membrane-scale__cut { margin-left: auto; }
+.membrane-scale [hidden] { display: none; }
+.membrane-scale__note { margin: 5px 0 10px; color: var(--ink-faint); font-size: 12px; line-height: 1.5; }
+.btn:disabled { opacity: 0.5; cursor: wait; }
+.label-leaders { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.label-leaders line { stroke: #8096a5; stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.65; }
+.label--cell { font-size: 11.5px; font-weight: 500; padding: 3px 6px; }
+.cell-section-key {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px;
+  padding: 7px 10px; margin-top: 6px; background: var(--paper-tint);
+  border-radius: 6px; font-size: 11px; color: var(--ink-soft);
+}
+.cell-section-key b { font-weight: 600; }
+.cell-section-key[hidden], .cell-scale-status[hidden] { display: none; }
+.cell-scale-status {
+  position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
+  max-width: calc(100% - 24px); width: max-content; text-align: center;
+  background: rgba(255,255,255,0.94); color: var(--accent-dark);
+  border: 1px solid var(--line); border-radius: 20px; padding: 6px 14px;
+  font-size: 12px; pointer-events: none;
+}
+.interior-tools { margin: 0 0 10px; padding: 12px; border: 1px solid #cbdfe9; border-radius: 10px; background: #f5fafc; }
+.interior-tools__eyebrow { display: flex; flex-wrap: wrap; gap: 3px 12px; align-items: baseline; margin: 0 0 9px; font-size: 12px; color: var(--ink-soft); }
+.interior-tools__eyebrow b { color: var(--accent-dark); font-size: 13px; }
+.interior-tools__buttons, .interior-focus { display: flex; flex-wrap: wrap; gap: 6px; }
+.interior-key { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0; font-size: 11px; line-height: 1.6; color: var(--ink-soft); }
+.interior-key > span { border-left: 3px solid; padding: 2px 8px; }
+.interior-key b { display: block; color: var(--ink); font-size: 12px; }
+.interior-key__a { border-color: #499bc1 !important; }
+.interior-key__b { border-color: #b08aaf !important; }
+.interior-key__c { border-color: #92aaa0 !important; }
+.interior-key.is-continuity { padding: 10px 4px; border-radius: 8px; background: #f3f8fa; }
+.interior-concepts { margin-top: 14px; }
+.interior-sequence { padding: 10px; border-radius: 7px; background: #f2f7fc; color: var(--accent-dark); font-size: 12px; line-height: 1.65; }
+.interior-panel[hidden], .interior-tools[hidden], .interior-key[hidden], .interior-sequence[hidden] { display: none; }
+.label--interior { font-size: 11px; font-weight: 500; padding: 4px 6px; }
+@media (max-width: 680px) {
+  .membrane-scale { gap: 6px; }
+  .membrane-scale__title { width: 100%; }
+  .membrane-scale__molecule { display: inline; font-size: 11px; }
+  .membrane-scale .btn { min-height: 38px; padding: 6px 9px; }
+  .label--cell { font-size: 10px; max-width: 46%; white-space: normal; text-align: center; }
+  .cell-section-key { gap: 4px 8px; font-size: 10px; }
+  .interior-tools { padding: 10px; }
+  .interior-tools__buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .interior-tools__buttons .btn { padding: 7px 6px; min-height: 38px; }
+  .interior-key { gap: 5px; font-size: 10px; }
+  .interior-key > span { padding-left: 5px; padding-right: 0; }
+  .interior-key b { font-size: 11px; }
+  .label--interior { font-size: 10px; max-width: 44%; white-space: normal; text-align: center; }
+}
+
 /* ---------------- LEVEL 1 : 원자 색 범례 ---------------- */
 
 .atomkey {

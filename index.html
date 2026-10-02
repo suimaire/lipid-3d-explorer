@@ -55,16 +55,42 @@
 
   <div class="module__body">
     <div class="stage">
+      <div class="membrane-scale" role="group" aria-label="모듈 1 관찰 스케일">
+        <span class="membrane-scale__title">관찰 스케일</span>
+        <button type="button" class="btn btn--small" data-m1="cell" aria-pressed="true">세포 전체</button>
+        <span class="membrane-scale__arrow" aria-hidden="true">↔</span>
+        <button type="button" class="btn btn--small" data-m1="interior" aria-pressed="false">세포 내부</button>
+        <span class="membrane-scale__arrow" aria-hidden="true">↔</span>
+        <button type="button" class="btn btn--small" data-m1="membrane" aria-pressed="false">막 확대</button>
+        <span class="membrane-scale__molecule" id="m1-scale-molecule">↔ 개별 지질</span>
+        <button type="button" class="btn btn--small membrane-scale__cut" data-m1="cutaway" aria-pressed="false">단면 보기</button>
+      </div>
+      <div class="interior-tools" id="m1-interior-tools" hidden>
+        <p class="interior-tools__eyebrow"><b>응용 예시 · 골격근 섬유</b><span>Cell Interior · 길이 방향으로 연 단면</span></p>
+        <div class="interior-tools__buttons" role="group" aria-label="세포 내부 관찰 모드">
+          <button type="button" class="btn btn--small" data-m1="interior-overview" aria-pressed="true">전체 구조</button>
+          <button type="button" class="btn btn--small" data-m1="interior-continuity" aria-pressed="false">막 연결성</button>
+          <button type="button" class="btn btn--small" data-m1="interior-excitation" aria-pressed="false">흥분 전달</button>
+          <button type="button" class="btn btn--small" data-m1="interior-triad" aria-pressed="false">Triad 확대</button>
+        </div>
+      </div>
       <div class="canvas-wrap" id="canvas-membrane">
         <div class="canvas-fallback" role="status">
           <b>3D 화면을 불러오지 못했습니다.</b>
           <span>브라우저에서 WebGL이 꺼져 있거나 지원되지 않습니다. 최신 Chrome · Edge · Safari에서 다시 열어 주세요.</span>
         </div>
       </div>
-      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · <b>막에서 지질 하나를 클릭하면 원자 단위 3D 구조</b>로 확대됩니다.</p>
+      <p class="interior-sequence" id="m1-interior-sequence" role="status" hidden></p>
+      <div class="interior-key" id="m1-interior-key" hidden aria-label="막과 수용성 공간의 연결 관계">
+        <span class="interior-key__a"><b>A · 세포막 계통</b>근섬유막 ↔ T소관 막<br>세포 밖의 물 ↔ T소관 내강</span>
+        <span class="interior-key__b"><b>B · 독립된 근소포체</b>SR 막과 내강<br>T소관과 좁은 틈을 사이에 둠</span>
+        <span class="interior-key__c"><b>C · 세포질</b>근원섬유 사이의 수용성 공간<br>T소관·SR 내강의 바깥</span>
+      </div>
+      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · 터치 = 회전 / 두 손가락 확대 · <b>세포 전체·막 확대의 지질이나 아래 범례를 선택하면 원자 단위 3D 구조</b>로 이동합니다.</p>
+      <p class="membrane-scale__note" id="m1-scale-note">막 두께와 지질 크기는 구조를 관찰하기 위해 실제 비율보다 과장되어 있습니다.</p>
 
       <div class="controls" role="group" aria-label="모듈 1 조작">
-        <button type="button" class="btn" data-m1="overview">전체 막 보기</button>
+        <button type="button" class="btn" data-m1="overview">기본 배치 보기</button>
         <button type="button" class="btn" data-m1="types">지질 종류 보기</button>
         <button type="button" class="btn" data-m1="asymmetry">막 비대칭성 보기</button>
         <button type="button" class="btn" data-m1="psflip">PS 외부 노출 보기</button>
@@ -83,6 +109,21 @@
         <p class="panel__eyebrow">현재 보고 있는 것</p>
         <h3 id="m1-caption-title">전체 막 보기</h3>
         <p id="m1-caption-text" class="panel__caption"></p>
+      </div>
+
+      <div class="panel__block interior-panel" id="m1-interior-panel" hidden>
+        <p class="panel__eyebrow">구조에 가까이 가기</p>
+        <div class="interior-focus" role="group" aria-label="세포 내부 관심 구조">
+          <button type="button" class="btn btn--small" data-m1="interior-nmj" aria-pressed="false">신경근접합부 · NMJ</button>
+          <button type="button" class="btn btn--small" data-m1="interior-tubule" aria-pressed="false">T소관 입구</button>
+          <button type="button" class="btn btn--small" data-m1="interior-sr" aria-pressed="false">SR 그물망</button>
+        </div>
+        <ul class="bullets interior-concepts">
+          <li>T소관은 <b>근섬유막이 안으로 함입된 구조</b>입니다. 내강은 세포 바깥 공간과 이어집니다.</li>
+          <li>SR은 <b>별개의 막 구획</b>입니다. 두 종말수조가 T소관 양옆에서 삼합체(triad)를 이룹니다.</li>
+          <li>NMJ는 표면에 있습니다. 흥분은 근섬유막을 따라 전파된 뒤 T소관을 통해 내부로 전달됩니다.</li>
+        </ul>
+        <p class="note">모든 세포의 일반 구조가 아닌 골격근의 예시입니다. 막 두께, T소관 지름, SR 크기, 근원섬유 간격, NMJ와 내부 구조의 거리 및 전체 상대 비율을 관찰하기 쉽게 조정했습니다.</p>
       </div>
 
       <div class="panel__block panel__block--detail" id="m1-detail" hidden>
@@ -381,6 +422,6 @@
 <noscript>
   <p style="padding:24px;text-align:center">이 페이지는 3D 애니메이션을 위해 JavaScript가 필요합니다.</p>
 </noscript>
-<script type="module" src="./scripts/main.js"></script>
+<script type="module" src="./scripts/main.js?v=cell-interior-1"></script>
 </body>
 </html>

@@ -16,6 +16,114 @@ HAFS 생화학 특강용 인터랙티브 학습 페이지. 세포막 지질의 *
 카메라 조작(드래그 회전 · 휠 확대)과 3D 좌표에 붙는 HTML 라벨 오버레이는 `scripts/core/viewer.js`에
 직접 구현했습니다. OrbitControls 등 추가 의존성은 쓰지 않습니다.
 
+## 모듈 1의 관찰 스케일
+
+**세포 전체 ⇄ 세포 내부 ⇄ 막 확대 ⇄ 개별 지질**의 네 공간 스케일을 탐색하고,
+개별 지질에서는 원자 단위 3D 모델과 2D 구조식을 번갈아 봅니다.
+첫 화면은 닫힌 세포막이며, [단면 보기]는 앞쪽 지질을 실제 렌더 목록에서 제외해 두 leaflet과
+세포질을 드러냅니다. [세포 내부]는 **응용 예시 · 골격근 섬유**의 별도 장면으로 전환합니다.
+구형 모델이 근육세포로 변형되는 과정이 아닙니다. 내부 장면의 [막 확대]는 sarcolemma의
+특정 표면에 접근한 뒤 기존 지질 이중층 조각에 연결됩니다.
+`prefers-reduced-motion`에서는 카메라의 스케일 전환을 즉시 처리합니다.
+
+- `scripts/core/whole-cell.js`: 두 반지름의 Fibonacci sphere, 법선 방향 지질 배치,
+  geometry별 4개 InstancedMesh, 단면과 PS 상태. 기존 `buildLipid`의 부품·색을 재사용합니다.
+- `scripts/core/membrane-composition.js`: 막 조각과 세포 전체가 공유하는 조성, seeded shuffle.
+- `scripts/core/cell-interior.js`: 길쭉한 근섬유의 longitudinal cutaway, sarcolemma/T-tubule,
+  별도 SR network와 terminal cisternae, triad, NMJ, 평행한 myofibril과 공간 표지.
+  첫 세포 내부 진입 때 생성하고 이후 같은 장면을 재사용합니다.
+- `scripts/modules/membrane.js`: 공간 스케일과 내부 관찰 모드, 라벨, 초점 이동 및 기존 지질 선택을 연결합니다.
+- 데스크톱은 인지질 4,304개 + 콜레스테롤 301개, 시작 시 680px 이하 또는 저메모리 장치에서는
+  2,421개 + 169개입니다. 좁은 화면의 기호 폭을 넓혀 표면 밀도를 유지하고, 구의 면 수를 줄이며 픽셀 비율을 1.5로 제한합니다.
+- 드래그/터치 회전, 휠/두 손가락 확대를 지원합니다. Reset은 현재 공간 스케일이나 선택한 분자의
+  기본 프레이밍으로 돌아오며, 단면 상태와 사용자가 선택한 자동 회전·라벨 설정은 유지합니다.
+- 모형의 두께·분자 크기·조성은 학습용으로 과장했습니다. 구형 장면은 닫힌 이중층의 개념 모형이며,
+  세포 내부 장면은 골격근의 막 구획화 예시입니다. 실제 분자 동역학은 계산하지 않습니다.
+
+### 세포 내부 · 골격근 섬유
+
+불투명한 근섬유 외피의 일부를 길이 방향으로 제거해 내부를 관찰합니다. Sarcolemma와 T-tubule은
+같은 계열의 색으로 이어지고, T-tubule의 열린 lumen에는 세포 바깥쪽과 같은 물 표지를 둡니다.
+T-tubule도 일부를 관찰용으로 절개해 lumen을 드러냅니다. 이 절개와 표본 경계의 잘린 관 끝은
+실제 관이 cytosol로 열려 있거나 세포 안에서 자유롭게 끝난다는 뜻이 아닙니다.
+별도 색의 SR은 myofibril 주위를 감싸며, triad에서는 **SR 종말수조 — 틈 — T-tubule — 틈 — SR 종말수조**가
+보입니다. NMJ는 근섬유 표면에 있고 대표 triad와 길이 방향으로 떨어져 있습니다.
+
+- **전체 구조**: 여러 myofibril 사이에 T-tubule과 SR이 놓인 넓은 3/4 cutaway.
+- **막 연결성**: A(세포외 공간과 연속된 T-tubule lumen / sarcolemma와 연속된 T-tubule membrane),
+  B(별도 SR 구획), C(cytosol)를 구분합니다. 막과 수용성 공간 자체가 같은 물질이라는 뜻은 아닙니다.
+- **흥분 전달**: NMJ → sarcolemma를 따라 전파 → T-tubule → triad → SR Ca²⁺ 방출 순서를 강조합니다.
+  표면을 따라가는 띠와 T소관 벽의 고리로 전파를 표시하고 약 6초 뒤 강조를 종료합니다.
+  신호의 위치와 순서를 설명하는 도식이며, 빛이나 입자가 전기 신호의 실체라는 뜻은 아닙니다.
+  외부와 내강의 물 표지는 이 신호와 독립된 고정 표지입니다.
+- **Triad 확대**, **NMJ**, **T-tubule**, **SR**: 해당 부위로 카메라를 이동합니다.
+  기존 회전·확대·자동 회전·Reset·라벨 토글을 함께 사용합니다.
+- Myofibril과 반복되는 막 구간·표지는 `InstancedMesh` 또는 하나로 합친 geometry로 묶습니다.
+  막 두께, 관 지름, SR 크기, myofibril 간격, NMJ 거리와 전체 상대 비율은 관찰을 위해 과장합니다.
+  Actin/myosin 개별 filament, 정량적인 이온 이동·수축·혈류는 이 장면의 범위에 포함하지 않습니다.
+
+내부 장면의 구현 수치는 다음과 같습니다. 길이와 간격은 모두 교육용 모형 단위입니다.
+
+| 항목 | 구현 |
+| --- | --- |
+| 근섬유 | 길이 34 · 지름 14, 외피 둘레 약 33.9%를 길이 방향으로 제거 |
+| Sarcolemma → T-tubule | 하나의 indexed mesh. 외피의 실제 관 입구와 안팎 경계 고리의 정점을 공유하며, 입구를 막는 cap 없음 |
+| Myofibril | 6개를 평행 배치 |
+| SR | Desktop 972 / compact 780개 구간을 하나의 `InstancedMesh`로 묶고 종말수조와 연결 |
+| Triad / NMJ | 접합 틈 0.34, NMJ와 대표 triad의 길이 방향 간격 14.5 |
+| 반복 geometry | 10개 instance batch, 전체 mesh 18개(평소 숨긴 흥분 전달용 강조 mesh 2개 포함) |
+
+검증:
+
+```bash
+node scripts/qa/check-cell.mjs
+node scripts/qa/check-interior.mjs
+node scripts/qa/check-molecules.mjs
+```
+
+`check-cell`은 실제 인스턴스 행렬의 head/tail 방향, 극지방 밀도, 지질 간격, 콜레스테롤 위치,
+PS 이동 시 총량 보존, PIP2 위치, 단면 제거, 재현성, 버퍼 재사용, pinch/회전/확대 제한을 확인합니다.
+`check-interior`는 내부 장면의 공간 관계와 반복 geometry를 점검합니다. 자동 점검과 별도로 브라우저에서
+다음 장면을 확인합니다. 이는 재검증 절차이며 특정 장치의 실행 결과나 성능 보증이 아닙니다.
+
+| 화면 | 확인할 장면 |
+| --- | --- |
+| 데스크톱 | 기본 cutaway, 회전 후, 막 연결성, NMJ, 표면에서 이어지는 T-tubule, SR network, Triad 확대, 막 확대 전환 |
+| 모바일 390px | 기본 내부 장면, Triad 확대, 조작 버튼의 줄바꿈·가로 넘침·라벨 가독성 |
+| 기존 기능 | Whole Cell/단면, 막 조각·비대칭성·PS 노출, 지질 선택·3D/2D, Reset, 회전·pinch·라벨 |
+
+시각 점검에서는 T-tubule과 sarcolemma가 이어져 보이는지, T-tubule lumen과 cytosol이 구별되는지,
+SR과 T-tubule 사이의 틈, myofibril 주변 SR, NMJ와 triad의 분리, 내부 공간의 가독성을 확인합니다.
+로컬 주소에 `?qa`를 붙이면 페이지 아래에 실제 프레임 간격과 draw call을 표시하는 진단 패널이 생깁니다.
+이 패널은 공개 사이트에서는 로드하지 않습니다. 측정된 FPS는 실행 장치·브라우저의 값이며 휴대폰 성능을 보증하지 않습니다.
+
+### 개발자용 브라우저 QA (선택)
+
+정적 서버를 켠 뒤, **이미 Playwright와 Chrome을 사용할 수 있는 개발 환경**에서 다음을 실행합니다.
+앱 자체와 일반 사용자는 패키지 설치가 필요 없습니다. 이 도구는 데스크톱·390px 화면을 캡처하고
+스케일 전환, 기존 지질 기능, 터치/확대, reduced-motion 및 가로 넘침을 점검합니다.
+
+```bash
+node scripts/qa/check-interior-browser.mjs
+```
+
+| 환경 변수 | 지정할 값 / 기본 동작 |
+| --- | --- |
+| `PLAYWRIGHT_MODULE` | 기존 Playwright `index.mjs`의 절대 경로. 생략하면 `playwright` 패키지 탐색 |
+| `CHROME_PATH` | Chrome 실행 파일 경로. 생략하면 설치된 Chrome 채널 사용 |
+| `QA_URL` | 점검할 로컬 페이지. 기본 `http://127.0.0.1:4173/?qa` |
+| `QA_OUT` | 캡처·보고서 저장 폴더. 기본 시스템 임시 폴더 아래 `lipid-interior-qa` |
+
+PowerShell에서 경로를 바꾸는 예시입니다. 설치된 도구의 실제 경로로 바꿔 사용합니다.
+
+```powershell
+$env:PLAYWRIGHT_MODULE = 'C:\tools\playwright\index.mjs'
+$env:CHROME_PATH = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
+$env:QA_URL = 'http://127.0.0.1:4173/?qa'
+$env:QA_OUT = Join-Path $env:TEMP 'lipid-interior-qa'
+node scripts/qa/check-interior-browser.mjs
+```
+
 ## 파일 구조
 
 ```
@@ -28,11 +136,18 @@ lipid-3d-explorer/
 │  ├─ core/
 │  │  ├─ viewer.js                Three.js 래퍼: 렌더러 · 라이팅 · 궤도 카메라 · 라벨 · 피킹
 │  │  ├─ lipids.js                지질 데이터표 + 막에 쓰는 도식 지질 모델 빌더
+│  │  ├─ membrane-composition.js  막 조각·세포 전체가 공유하는 leaflet 조성
+│  │  ├─ whole-cell.js            구형 이중층의 분포·방향·인스턴싱·단면·PS 상태
+│  │  ├─ cell-interior.js         골격근 내부 cutaway·막 연결성·SR·triad·NMJ
 │  │  ├─ molecules.js             원자 단위 지질 구조 좌표 생성기 (three.js 의존 없음)
 │  │  ├─ atomistic.js             원자 단위 구조를 ball-and-stick 3D 로 굽는다 (LEVEL 1)
 │  │  └─ structures.js            지질 2D 화학 구조식 SVG (LEVEL 2)
 │  ├─ qa/
-│  │  └─ check-molecules.mjs      원자 단위 구조 자체 점검 (node 로 실행)
+│  │  ├─ check-molecules.mjs      원자 단위 구조 자체 점검 (node 로 실행)
+│  │  ├─ check-cell.mjs           구형 이중층·조작기의 자동 점검
+│  │  ├─ check-interior.mjs       근섬유 막 구조·구획·인스턴싱 자동 점검
+│  │  ├─ check-interior-browser.mjs  선택적 Playwright·Chrome 화면 캡처와 회귀 점검
+│  │  └─ browser-metrics.js       로컬 ?qa 환경에서만 프레임 간격·draw call 측정
 │  └─ modules/
 │     ├─ membrane.js              모듈 1 — 세포막 지질과 막 비대칭성
 │     ├─ pip2.js                  모듈 2 — PIP2 신호전달 (단계 목록 UI 공용 함수 포함)
@@ -104,16 +219,17 @@ git push -u origin main
 > 세포막은 똑같은 인지질이 죽 늘어선 막일까, 아니면 여러 종류의 지질이 서로 다른 쪽에 배치된 구조일까?
 
 - **전체 막 보기** — 지질 이중층 전체. outer/inner leaflet 라벨, 콜레스테롤 삽입
+- **세포 내부 보기** — 골격근 섬유의 sarcolemma, T-tubule, SR, triad와 NMJ를 탐색하는 응용 예시
 - **지질 종류 보기** — 7종을 2.4초 간격으로 하나씩 강조(나머지는 회색 처리)
 - **막 비대칭성 보기** — 두 leaflet을 위아래로 벌려 조성 비교
 - **PS 외부 노출 보기** — 안쪽 PS 일부가 호를 그리며 바깥층으로 이동
 - **원자 단위 3D 구조**(막에서 지질 클릭 또는 범례 클릭) — ball-and-stick 모델 + 부위별 라벨 +
   대표 분자 정보 카드. 여기서 **[2D 구조식 보기]** 로 같은 분자의 화학 구조식과 번갈아 볼 수 있습니다.
-- 라벨 표시 / 자동 회전 토글, Reset (Reset은 전체 막으로 돌아가며 선택도 해제합니다)
+- 라벨 표시 / 자동 회전 토글, Reset (현재 공간 스케일 또는 선택한 분자의 기본 시점으로 돌아갑니다)
 
 수록 지질: PC · PE · PS · PI · PIP2 · SM · 콜레스테롤
 
-지질 탐색은 세 단계로 나뉘어 있습니다.
+네 공간 스케일 가운데 개별 지질에 들어가는 표현 단계는 다음과 같습니다.
 
 | 단계 | 화면 | 다음 단계로 | 캔버스 클릭 |
 | --- | --- | --- | --- |
@@ -188,7 +304,8 @@ vasopressin → V1a 수용체(GPCR) → Gq/11 → PLCβ → PIP2 → IP3 + DAG �
 - 라벨은 캔버스 밖으로 잘리지 않도록 가장자리에서 위치가 고정됩니다. 라벨 전체를 끌 수 있습니다.
 - 자동 회전은 모듈 1에서만 켜집니다(모듈 2·3은 위아래 방향이 의미를 가지는 장면이라 꺼 둡니다).
   `prefers-reduced-motion` 환경에서는 자동 회전이 처음부터 꺼집니다.
-- 모든 지오메트리는 저·중폴리곤이며 재질은 색상 단위로 캐시해 재사용합니다. 데스크톱에서 60 fps로 동작합니다.
+- 모든 지오메트리는 저·중폴리곤이며 재질은 색상 단위로 캐시해 재사용합니다. 실제 프레임 속도는
+  장치와 브라우저, 현재 장면에 따라 달라지며 로컬 `?qa` 패널에서 측정합니다.
 - 원자 단위 모델은 구·원기둥 지오메트리 **하나**를 원소별 `InstancedMesh` 로 묶어 그립니다.
   분자 하나가 원자 28~65개인데도 draw call 은 10개 남짓이고, 한 번 만든 모델은 캐시해 재사용합니다.
   수소를 그리지 않아 원자 수가 3분의 1 수준으로 줄어드는 것도 성능에 도움이 됩니다.
@@ -199,6 +316,8 @@ vasopressin → V1a 수용체(GPCR) → Gq/11 → PLCβ → PIP2 → IP3 + DAG �
 세부 내용은 [`docs/SCIENTIFIC_NOTES.md`](docs/SCIENTIFIC_NOTES.md)에 정리했습니다. 요약하면:
 
 - 막 조성은 **동물 세포 원형질막의 대표적 경향**을 단순화한 것이며 고정 비율이 아닙니다.
+- 세포 내부 장면은 **골격근 섬유의 막 구획화 예시**이며 모든 세포의 일반 구조가 아닙니다.
+  T-tubule은 sarcolemma의 함입이고 lumen은 세포외 공간과 연속됩니다. SR은 별도의 막계입니다.
 - 모듈 2의 핵심 7단계는 Gq–PLCβ 계열의 **대표적(canonical) 경로 예시**입니다. 아형과 세포 종류에 따라 달라집니다.
 - 모듈 2의 확장은 **바소프레신이 V1a 수용체에 결합하는 경우**의 예시입니다. 바소프레신의 모든 작용이
   이 경로를 쓰는 것은 아니며, 신장 집합관의 V2 수용체는 Gs–cAMP–PKA 경로를 씁니다.

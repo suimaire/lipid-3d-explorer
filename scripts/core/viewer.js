@@ -12,7 +12,7 @@ const REDUCED_MOTION =
 
 /* ---------- 카메라 궤도 컨트롤 (드래그 회전 + 휠 줌) ---------- */
 
-class Orbit {
+export class Orbit {
   constructor(camera, dom, target) {
     this.camera = camera;
     this.dom = dom;
@@ -38,33 +38,49 @@ class Orbit {
     this.moved = 0;
     // 사용자가 직접 회전·확대했는지. 자동 재생이 카메라를 되돌릴지 판단할 때 쓴다.
     this.userMoved = false;
+    this.enabled = true;
 
     this._bind();
   }
 
   _bind() {
     const dom = this.dom;
-    let px = 0;
-    let py = 0;
-    let pointerId = null;
+    const pointers = new Map();
+    let pinchDistance = 0;
+    let gestureWasPinch = false;
+    const distance = () => {
+      const [a, b] = [...pointers.values()];
+      return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
+    };
 
     const down = (e) => {
-      if (e.button !== undefined && e.button !== 0) return;
-      pointerId = e.pointerId;
+      if (!this.enabled || (e.button !== undefined && e.button !== 0)) return;
+      if (!pointers.size) { this.moved = 0; gestureWasPinch = false; }
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       this.dragging = true;
       this.engaged = true; // 캔버스를 한 번 조작한 뒤에만 휠 확대를 켠다
-      this.moved = 0;
-      px = e.clientX;
-      py = e.clientY;
-      capture(dom, pointerId, true);
+      if (pointers.size > 1) {
+        gestureWasPinch = true;
+        this.moved = 100; // releasing either finger must never select a lipid
+        pinchDistance = distance();
+      }
+      capture(dom, e.pointerId, true);
     };
 
     const move = (e) => {
-      if (!this.dragging || e.pointerId !== pointerId) return;
-      const dx = e.clientX - px;
-      const dy = e.clientY - py;
-      px = e.clientX;
-      py = e.clientY;
+      const previous = pointers.get(e.pointerId);
+      if (!this.enabled || !previous) return;
+      const dx = e.clientX - previous.x;
+      const dy = e.clientY - previous.y;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pointers.size > 1) {
+        const next = distance();
+        if (next && pinchDistance) this.goal.radius = clamp(this.goal.radius * pinchDistance / next, this.minRadius, this.maxRadius);
+        pinchDistance = next;
+        this.userMoved = true;
+        this.idle = 0;
+        return;
+      }
       this.moved += Math.abs(dx) + Math.abs(dy);
       if (this.moved > 4) this.userMoved = true;
       this.goal.theta -= dx * 0.006;
@@ -73,10 +89,10 @@ class Orbit {
     };
 
     const up = (e) => {
-      if (e.pointerId !== pointerId) return;
-      this.dragging = false;
-      capture(dom, pointerId, false);
-      pointerId = null;
+      pointers.delete(e.pointerId);
+      this.dragging = pointers.size > 0;
+      if (gestureWasPinch) this.moved = 100;
+      capture(dom, e.pointerId, false);
     };
 
     dom.addEventListener("pointerdown", down);
@@ -91,7 +107,7 @@ class Orbit {
     dom.addEventListener(
       "wheel",
       (e) => {
-        if (!this.engaged && !e.ctrlKey) return;
+        if (!this.enabled || (!this.engaged && !e.ctrlKey)) return;
         e.preventDefault();
         const f = Math.exp(e.deltaY * 0.0012);
         this.goal.radius = clamp(this.goal.radius * f, this.minRadius, this.maxRadius);
@@ -137,10 +153,10 @@ class Orbit {
 
   update(dt) {
     this.idle += dt;
-    if (this.autoRotate && !this.dragging && this.idle > 1.2) {
+    if (this.enabled && this.autoRotate && !this.dragging && this.idle > 1.2) {
       this.goal.theta += this.autoSpeed * dt;
     }
-    const k = 1 - Math.pow(0.0015, dt); // 프레임률 독립 damping
+    const k = REDUCED_MOTION ? 1 : 1 - Math.pow(0.0015, dt); // 프레임률 독립 damping
     this.radius += (this.goal.radius - this.radius) * k;
     this.theta += (this.goal.theta - this.theta) * k;
     this.phi += (this.goal.phi - this.phi) * k;
@@ -188,7 +204,18 @@ class Labels {
       _w: 0,
       _h: 0,
       _dirty: true,
+      screen: opts.screen || null,
     };
+    if (item.screen) {
+      if (!this.lines) {
+        this.lines = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        this.lines.classList.add("label-leaders");
+        this.lines.setAttribute("aria-hidden", "true");
+        this.root.prepend(this.lines);
+      }
+      item.line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      this.lines.appendChild(item.line);
+    }
     this.items.push(item);
     return item;
   }
@@ -230,6 +257,8 @@ class Labels {
     for (const it of this.items) {
       if (!it.visible) {
         it.el.classList.add("label--hidden");
+        it.el.setAttribute("aria-hidden", "true");
+        if (it.line) it.line.style.display = "none";
         continue;
       }
       if (it.anchor.isObject3D) {
@@ -241,11 +270,14 @@ class Labels {
       v.project(camera);
       const behind = v.z > 1;
       const off = v.x < -1.15 || v.x > 1.15 || v.y < -1.15 || v.y > 1.15;
-      if (behind || off) {
+      if (behind || (off && !it.screen)) {
         it.el.classList.add("label--hidden");
+        it.el.setAttribute("aria-hidden", "true");
+        if (it.line) it.line.style.display = "none";
         continue;
       }
       it.el.classList.remove("label--hidden");
+      it.el.removeAttribute("aria-hidden");
       if (it._dirty || !it._w) {
         it._w = it.el.offsetWidth;
         it._h = it.el.offsetHeight;
@@ -254,9 +286,18 @@ class Labels {
       // 캔버스 밖으로 잘리지 않도록 가장자리에서 붙잡아 둔다
       const hw = it._w / 2 + 4;
       const hh = it._h / 2 + 3;
-      const px = clamp((v.x * 0.5 + 0.5) * width, hw, Math.max(hw, width - hw));
-      const py = clamp((-v.y * 0.5 + 0.5) * height, hh, Math.max(hh, height - hh));
+      const ax = (v.x * 0.5 + 0.5) * width;
+      const ay = (-v.y * 0.5 + 0.5) * height;
+      const px = clamp(it.screen ? it.screen.x * width : ax, hw, Math.max(hw, width - hw));
+      const py = clamp(it.screen ? it.screen.y * height : ay, hh, Math.max(hh, height - hh));
       it.el.style.transform = `translate(-50%,-50%) translate(${px}px, ${py}px)`;
+      if (it.line) {
+        it.line.style.display = "";
+        it.line.setAttribute("x1", px);
+        it.line.setAttribute("y1", py);
+        it.line.setAttribute("x2", clamp(ax, 0, width));
+        it.line.setAttribute("y2", clamp(ay, 0, height));
+      }
     }
   }
 }
@@ -336,7 +377,7 @@ export class Viewer {
   }
 
   _onClick(e) {
-    if (!this._pickables || !this._pickables.length) return;
+    if (!this.controls.enabled || e.button > 0 || !this._pickables || !this._pickables.length) return;
     if (this.controls.moved > 6) return;
     const r = this.host.getBoundingClientRect();
     this.pointer.x = ((e.clientX - r.left) / r.width) * 2 - 1;
@@ -347,6 +388,11 @@ export class Viewer {
       // three.js 의 raycaster 는 visible=false 인 것도 그대로 맞힌다.
       // 숨어 있는 물체가 잡히지 않도록 조상까지 거슬러 올라가 확인한다.
       if (!isVisible(hit.object)) continue;
+      const instancePick = hit.object.userData.pickIds?.[hit.instanceId];
+      if (instancePick !== undefined) {
+        for (const fn of this._clickHandlers) fn(instancePick, hit.object, hit);
+        return;
+      }
       let obj = hit.object;
       while (obj && obj.userData.pickId === undefined) obj = obj.parent;
       if (!obj) continue;
@@ -371,7 +417,8 @@ export class Viewer {
     this.resize();
     for (const fn of this._updaters) fn(dt);
     this.controls.update(dt);
-    this.renderer.render(this.scene, this.camera);
+    if (this.renderOverride) this.renderOverride();
+    else this.renderer.render(this.scene, this.camera);
     this.labels.update(this.camera, this._size.w, this._size.h);
   }
 

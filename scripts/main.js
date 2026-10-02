@@ -34,6 +34,10 @@ function boot() {
   });
 
   select(current);
+  // Explicit, local-only diagnostics. No test UI or sampling on the published site.
+  if (["localhost", "127.0.0.1", "[::1]"].includes(location.hostname) && new URLSearchParams(location.search).has("qa")) {
+    import("./qa/browser-metrics.js").then(({ installMetrics }) => installMetrics(modules));
+  }
   requestAnimationFrame(loop);
 }
 
