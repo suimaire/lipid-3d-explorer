@@ -865,3 +865,56 @@ a { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   .label { transition: none; }
 }
+
+/* ============================================================
+   학습자 중심 정리 (2026-10)
+   - 영문 대문자·넓은 자간 라벨을 한글 보통 글씨로
+   - 흐린 회색 글자 대비 보강 (4.5:1 이상)
+   - 헤더 그라데이션 제거, 포털 위치(breadcrumb) 표시
+   ============================================================ */
+:root {
+  --ink-faint: #5d6a77;
+  --font: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+}
+
+body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.site-header { background: #fff; }
+.site-header__inner { padding: 16px 24px 14px; }
+.site-header h1 { font-size: 24px; letter-spacing: -0.3px; }
+.site-header__lead { margin-top: 6px; }
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 7px;
+  margin: 0 0 3px;
+  font-size: 13.5px;
+  color: var(--ink-faint);
+}
+.breadcrumb a { color: var(--ink-soft); text-decoration: none; padding: 2px 0; }
+.breadcrumb a:hover { color: var(--accent); text-decoration: underline; }
+
+.tab__no,
+.panel__eyebrow,
+.datalist dt,
+.steps button b,
+.label--zone,
+.mode-tag {
+  letter-spacing: 0;
+  text-transform: none;
+}
+.tab__no { font-size: 12.5px; font-weight: 600; }
+.panel__eyebrow { font-size: 13px; font-weight: 700; color: var(--accent-dark); }
+.datalist dt { font-size: 12.5px; }
+.steps button b { font-size: 12px; }
+
+.stage__hint { font-size: 13.5px; }
+.note { font-size: 13px; }
+
+.site-footer { padding: 20px 24px 32px; }
+.site-footer__brand { font-weight: 600; }

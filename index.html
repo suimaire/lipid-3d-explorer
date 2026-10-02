@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>지질의 생화학 3D 탐색기 · HAFS Biology Lab</title>
+<title>지질 생화학 3D 탐색기 · HAFS Biology Lab</title>
 <meta name="description" content="세포막 지질의 종류와 비대칭성, PIP2 신호전달, 지방산 베타산화를 3D 애니메이션으로 탐구하는 생화학 수업용 인터랙티브 자료." />
 <link rel="stylesheet" href="./styles/app.css" />
 <link rel="icon" href="./assets/favicon.svg" />
@@ -13,14 +13,17 @@
 <header class="site-header">
   <div class="site-header__inner">
     <div class="site-header__brand">
-      <p class="kicker">HAFS BIOLOGY LAB · BIOCHEMISTRY</p>
-      <h1>지질의 생화학 <span>3D 탐색기</span></h1>
+      <nav class="breadcrumb" aria-label="현재 위치">
+        <a href="https://suimaire.github.io/">수업 포털</a>
+        <span aria-hidden="true">›</span>
+        <a href="https://suimaire.github.io/#molecular">분자 · 생화학 탐구</a>
+      </nav>
+      <h1>지질 생화학 3D 탐색기</h1>
       <p class="site-header__lead">
         세포막을 이루는 지질의 <b>종류와 배치</b>, 지질이 만들어 내는 <b>신호</b>, 그리고 지질을 분해해
         에너지를 얻는 <b>대사 경로</b>를 3D 모델을 직접 움직여 보며 확인합니다.
       </p>
     </div>
-    <a class="site-header__back" href="https://suimaire.github.io/">← 수업 포털</a>
   </div>
 
   <nav class="tabs" aria-label="모듈 선택">
@@ -69,7 +72,7 @@
         <span class="controls__sep" aria-hidden="true"></span>
         <button type="button" class="btn btn--ghost" data-m1="labels" aria-pressed="true">라벨 표시</button>
         <button type="button" class="btn btn--ghost" data-m1="spin" aria-pressed="true">자동 회전</button>
-        <button type="button" class="btn btn--reset" data-m1="reset">Reset</button>
+        <button type="button" class="btn btn--reset" data-m1="reset">처음부터</button>
       </div>
 
       <div class="legend" id="m1-legend" aria-label="지질 종류 목록. 클릭하면 원자 단위 3D 구조로 확대해서 관찰합니다."></div>
@@ -100,7 +103,7 @@
       </div>
 
       <div class="panel__block">
-        <p class="panel__eyebrow">학생이 봐야 할 포인트</p>
+        <p class="panel__eyebrow">이것을 확인해 보세요</p>
         <ol class="points">
           <li>지질 하나를 클릭하면 <b>원자 단위 3D 구조</b>가 열리고, 거기서 <b>2D 구조식</b>과 번갈아 볼 수 있다.</li>
           <li>머리(head)는 물과 닿는 바깥쪽, 꼬리(tail)는 서로 마주 보고 안쪽에 모인다.</li>
@@ -143,7 +146,7 @@
         <button type="button" class="btn" data-m2="next">다음 단계 →</button>
         <span class="controls__sep" aria-hidden="true"></span>
         <button type="button" class="btn btn--ghost" data-m2="labels" aria-pressed="true">라벨 표시</button>
-        <button type="button" class="btn btn--reset" data-m2="reset">Reset</button>
+        <button type="button" class="btn btn--reset" data-m2="reset">처음부터</button>
       </div>
 
       <div class="controls controls--secondary" id="m2-shortcuts-core" role="group" aria-label="모듈 2 장면 바로가기">
@@ -231,7 +234,7 @@
       </div>
 
       <div class="panel__block">
-        <p class="panel__eyebrow">학생이 봐야 할 포인트</p>
+        <p class="panel__eyebrow">이것을 확인해 보세요</p>
         <ol class="points">
           <li>PIP2의 인산기가 <b>세포질 쪽</b>을 향하고 있는지 확인한다.</li>
           <li>잘린 뒤 <b>꼬리를 가진 쪽</b>과 <b>인산을 가진 쪽</b>이 각각 어디로 가는지 본다.</li>
@@ -281,7 +284,7 @@
         <button type="button" class="btn" data-m3="prev">← 이전 단계</button>
         <button type="button" class="btn" data-m3="next">다음 단계 →</button>
         <span class="controls__sep" aria-hidden="true"></span>
-        <button type="button" class="btn btn--reset" data-m3="reset">Reset</button>
+        <button type="button" class="btn btn--reset" data-m3="reset">처음부터</button>
       </div>
 
       <div class="controls controls--secondary" role="group" aria-label="모듈 3 표시 옵션">
@@ -336,7 +339,7 @@
       </div>
 
       <div class="panel__block">
-        <p class="panel__eyebrow">학생이 봐야 할 포인트</p>
+        <p class="panel__eyebrow">이것을 확인해 보세요</p>
         <ol class="points">
           <li>카르보닐 탄소(C1)를 기준으로 α(C2), β(C3)를 세는 방법을 확인한다.</li>
           <li>산화가 <b>β 탄소</b>에 집중되는 이유(C–C 결합을 끊기 쉬운 상태로 만든다)를 본다.</li>
@@ -357,10 +360,8 @@
 </main>
 
 <footer class="site-footer">
-  <p class="site-footer__brand">HAFS Biology Lab</p>
-  <p class="site-footer__credit">Teacher-built interactive science tools · CH Park</p>
-  <p class="site-footer__meta">생화학 특강 보조자료 — 지질의 생화학 3D 탐색기</p>
-  <p class="site-footer__meta">Three.js 기반 정적 웹페이지 · 외부 API 없음 · <a href="https://suimaire.github.io/">수업 포털로 돌아가기</a></p>
+  <p class="site-footer__meta">지질 생화학 3D 탐색기 · <a href="https://suimaire.github.io/#molecular">다른 탐색기 보기</a></p>
+  <p class="site-footer__brand">HAFS Biology Lab · CH Park</p>
   <p class="site-footer__meta page-views" data-page-views hidden></p>
 </footer>
 

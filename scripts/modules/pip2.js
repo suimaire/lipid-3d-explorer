@@ -55,49 +55,49 @@ const T = PIP2_TIMING;
 
 const STEPS = [
   {
-    tag: "STEP 1",
+    tag: "1단계",
     short: "PIP2의 위치",
     title: "PIP2는 막 안쪽 leaflet에 있다",
     text:
       "PIP2(phosphatidylinositol 4,5-bisphosphate)는 원형질막의 안쪽(세포질 쪽) leaflet에 존재하는 인지질입니다. 이노시톨 고리에 인산이 더 붙어 있어 머리 부분이 강한 음전하를 띠고, 그 머리는 세포질 쪽을 향합니다. 막 전체에서 차지하는 양은 매우 적습니다.",
   },
   {
-    tag: "STEP 2",
+    tag: "2단계",
     short: "PLC 결합",
     title: "PLC가 접근해 PIP2에 결합한다",
     text:
       "세포 바깥의 신호가 수용체를 통해 전달되면 phospholipase C(PLC)가 막 안쪽 면으로 불려 옵니다. PLC는 세포질 쪽에서 PIP2의 머리 부분에 결합합니다.",
   },
   {
-    tag: "STEP 3",
+    tag: "3단계",
     short: "절단",
     title: "PIP2가 잘려 DAG와 IP3가 된다",
     text:
       "PLC는 글리세롤과 인산 사이를 끊습니다. 그 결과 꼬리를 가진 쪽은 DAG(diacylglycerol), 인산이 붙은 머리 쪽은 IP3(inositol 1,4,5-trisphosphate)가 됩니다. 하나의 지질에서 성질이 완전히 다른 두 조각이 생깁니다.",
   },
   {
-    tag: "STEP 4",
+    tag: "4단계",
     short: "DAG · IP3",
     title: "DAG는 막에 남고, IP3는 세포질로 퍼진다",
     text:
       "DAG는 acyl chain 2개를 그대로 가지고 있어 소수성이 큽니다. 그래서 막을 떠나지 못하고 막 안에서 옆으로 움직입니다. 반대로 IP3는 인산기가 3개나 붙어 친수성이 매우 커서 막에 머물 수 없고 세포질로 확산합니다.",
   },
   {
-    tag: "STEP 5",
+    tag: "5단계",
     short: "IP3 수용체 결합",
     title: "IP3가 ER 막의 IP3 수용체에 결합한다",
     text:
       "세포질로 퍼진 IP3는 소포체(ER) 막에 있는 IP3 수용체(IP3R)에 결합합니다. IP3 수용체는 그 자체가 Ca2+를 통과시키는 통로 단백질입니다.",
   },
   {
-    tag: "STEP 6",
+    tag: "6단계",
     short: "Ca2+ 방출",
     title: "ER에 저장돼 있던 Ca2+가 세포질로 나온다",
     text:
       "IP3가 결합하면 통로가 열리고, ER 내부(lumen)에 높은 농도로 저장돼 있던 Ca2+가 농도 기울기를 따라 세포질로 쏟아져 나옵니다. 세포질의 Ca2+ 농도가 빠르게 올라갑니다.",
   },
   {
-    tag: "STEP 7",
+    tag: "7단계",
     short: "PKC 활성화",
     title: "DAG와 Ca2+가 함께 PKC를 활성화한다",
     text:

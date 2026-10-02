@@ -23,28 +23,28 @@ const C_NAD = 0x5a76a8;
 
 const STEPS = [
   {
-    tag: "STEP 1",
+    tag: "1단계",
     short: "산화 (FAD)",
     title: "① 산화 — α와 β 탄소 사이에 이중결합이 생긴다",
     text:
       "acyl-CoA dehydrogenase가 α(C2)와 β(C3) 탄소에서 수소를 하나씩 떼어 내 두 탄소 사이에 이중결합을 만듭니다(trans-Δ² -enoyl-CoA). 떼어 낸 전자와 수소는 FAD가 받아 FADH2가 됩니다.",
   },
   {
-    tag: "STEP 2",
+    tag: "2단계",
     short: "수화 (H2O)",
     title: "② 수화 — 이중결합에 물이 붙는다",
     text:
       "enoyl-CoA hydratase가 이중결합에 물 한 분자를 붙입니다. −OH는 β 탄소에, H는 α 탄소에 붙어 L-3-hydroxyacyl-CoA가 됩니다. 이 단계에서는 산화·환원이 일어나지 않습니다.",
   },
   {
-    tag: "STEP 3",
+    tag: "3단계",
     short: "산화 (NAD+)",
     title: "③ 산화 — β 탄소의 −OH가 케톤이 된다",
     text:
       "3-hydroxyacyl-CoA dehydrogenase가 β 탄소의 −OH를 케톤(C=O)으로 산화시키고, 이때 NAD+가 NADH가 됩니다. 이제 β 탄소가 카르보닐이 되어 바로 옆의 C–C 결합이 끊어지기 쉬운 상태가 됩니다.",
   },
   {
-    tag: "STEP 4",
+    tag: "4단계",
     short: "절단 (thiolysis)",
     title: "④ 절단 — acetyl-CoA가 떨어져 나온다",
     text:
