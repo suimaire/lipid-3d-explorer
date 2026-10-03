@@ -1,0 +1,16 @@
+{
+  "method": "Installed Chrome in headless mode, 120 real requestAnimationFrame intervals after 30 warm-up frames. Mobile uses touch and viewport emulation on the same computer.",
+  "baseline": {
+    "desktopOverview": { "drawCalls": 25, "visibleTriangles": 149944, "fps": 137.5, "p95Ms": 9.3 },
+    "desktopTriad": { "drawCalls": 23, "visibleTriangles": 149296, "fps": 132.4, "p95Ms": 10.1 },
+    "mobile390Overview": { "drawCalls": 25, "visibleTriangles": 69132, "fps": 235.3, "p95Ms": 8.9 }
+  },
+  "final": {
+    "desktopOverview": { "drawCalls": 39, "visibleTriangles": 234032, "fps": 300, "medianMs": 3.3, "p95Ms": 3.5, "canvas": "874×546", "fov": 48 },
+    "desktopTriad": { "drawCalls": 36, "visibleTriangles": 232952, "fps": 279.3, "medianMs": 3.3, "p95Ms": 6.4, "canvas": "874×546", "fov": 48 },
+    "mobile390Overview": { "drawCalls": 39, "visibleTriangles": 123800, "fps": 294.7, "medianMs": 3.3, "p95Ms": 4.8, "canvas": "356×438", "fov": 48 }
+  },
+  "geometry": { "myofibrils": 16, "srHighlightedFibrils": 4, "tubuleStations": 3, "meshes": 32, "instanceBatches": 16, "totalDesktopTriangles": 256060, "totalCompactTriangles": 133460 },
+  "interpretation": "Additional dense myofibrils and three membrane systems increase draw calls and triangles. Geometry remains batched rather than one mesh per repeated structure. The differing headless scheduling and apparent 300 FPS cap make baseline/final FPS unsuitable for an optimization claim. These measurements do not guarantee performance on a physical phone.",
+  "sources": ["baseline-browser/browser-report.json", "after/browser-report.json", "scripts/qa/check-interior.mjs"]
+}

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세포 속 막 구조 · 최종 시각 미세조정 QA</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f8fa; color: #233848; font: 15px/1.75 system-ui, sans-serif; }
+  main { max-width: 1440px; margin: auto; padding: 36px 24px 64px; }
+  header, section { background: white; border: 1px solid #dce5eb; border-radius: 14px; padding: 24px; margin-bottom: 22px; }
+  h1 { font-size: 28px; line-height: 1.4; margin: 8px 0 16px; }
+  h2 { font-size: 20px; margin: 0 0 14px; }
+  p { margin: 8px 0; } a { color: #176289; }
+  .eyebrow { color: #427166; font-weight: 650; font-size: 13px; }
+  .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+  .summary p { margin: 6px 0 12px; }
+  .summary strong { display: block; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  figure { margin: 0; min-width: 0; }
+  figcaption { font-weight: 650; margin-bottom: 8px; }
+  img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid #dce5eb; }
+  .mobile { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; }
+  .mobile figure { width: 280px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+  th, td { text-align: left; padding: 10px; border-bottom: 1px solid #dce5eb; }
+  th { background: #f0f6f8; }
+  .table-wrap { overflow-x: auto; }
+  .note { color: #596b76; font-size: 13px; }
+  li { margin: 5px 0; }
+  code { font-size: 13px; overflow-wrap: anywhere; }
+  @media (max-width: 700px) { main { padding: 16px 12px; } header, section { padding: 18px 14px; }
+    .pair, .summary { grid-template-columns: 1fr; } h1 { font-size: 23px; } }
+</style>
+<main>
+  <header>
+    <div class="eyebrow">Module 1 · 2026-10-03 · 로컬 작업</div>
+    <h1>세포 속 막 구조 — 최종 시각 미세조정</h1>
+    <p>기존 bilayer 곡면·leaflet 방향·막의 연결 관계를 유지한 채 가독성을 조정했습니다. <b>commit / push는 하지 않았습니다.</b></p>
+    <p><a href="../../../../index.html">로컬 탐색기 열기</a> · <a href="regression/browser-report.json">수정 후 브라우저 검사 원본</a> · <a href="baseline-regression/browser-report.json">수정 전 검사 원본</a></p>
+    <p class="note">아래 before는 작업 시작 시 지정된 기존 after 캡처를 복사한 것입니다. 기존 캡처와 이전 QA 기록은 보존했습니다. 사진을 누르면 원본 크기로 열립니다.</p>
+  </header>
+  <section>
+    <h2>완료 보고</h2>
+    <div class="summary">
+      <p><strong>1. 수정 전 진단</strong>뒤쪽 근섬유막과 내부 막의 입자가 경쟁했습니다. T소관 입구는 겹친 머리들로 중심이 막힌 듯 보였고, triad 중앙도 찬 기둥처럼 보일 여지가 있었습니다. 접합 틈은 분리되어 있었지만 강조가 약했습니다.</p>
+      <p><strong>2. 변경 파일</strong><code>scripts/core/cell-interior.js</code>, <code>scripts/core/curved-bilayer.js</code>, <code>scripts/modules/membrane.js</code>, <code>index.html</code>, <code>styles/app.css</code>, <code>README.md</code>, 이번 QA 보고서와 캡처. 기존 검사 스크립트는 수정하지 않았습니다.</p>
+      <p><strong>3. Overview</strong>먼 막에 카메라 깊이 기반 대비 감소를 적용하고, far 지질 기호 폭을 0.82 → 0.76으로 줄였습니다. 근섬유막의 대비와 근원섬유 opacity(0.16 → 0.10)를 낮췄습니다. 모든 막의 머리와 두 꼬리는 유지합니다.</p>
+      <p><strong>4. T소관 입구 / lumen</strong>좁아지는 funnel 안쪽 둘레의 표본 수와 내강 쪽 기호 폭을 줄였습니다. 카메라 각도, 안쪽 벽의 대비, 물 표식 크기를 조정해 중심 빈 공간을 드러냈습니다. 내강 라벨은 입구 목 부분을 가리킵니다.</p>
+      <p><strong>5. Triad 기본 화면</strong>관찰창을 조금 넓히고 카메라 기울기를 조정했습니다. 뒤쪽 T소관 벽의 대비를 낮춰 위쪽 빈 내강과 양옆 SR 사이의 두 접합 틈이 함께 드러납니다.</p>
+      <p><strong>6. Triad detail</strong>두 cytosolic leaflet 사이를 화면 중심에 맞추고 접합 틈 라벨을 추가했습니다. 반대편 SR의 가장자리와 주변 대비를 줄였습니다. 막 중심면·두께·접합 틈의 기하학적 크기는 바꾸지 않았습니다.</p>
+      <p><strong>7. UI / 설명 문구</strong>“세포 내부” → “세포 속 막 구조”. 보조 문구는 “응용 예시 · 골격근 섬유에서 본 막과 구획화”. 첫 네 문장에 sarcolemma의 이중층, T소관 함입과 세포외 연결, 독립 SR, 융합하지 않는 triad를 순서대로 설명합니다. NMJ는 접힌 보조 관찰에 유지합니다.</p>
+      <p><strong>8. 성능</strong>막의 InstancedMesh 8개와 전체 mesh 14개를 유지했습니다. draw call은 overview 11회 / triad 10회로 동일합니다. 지질 표본과 렌더 부품 수는 소폭 감소했습니다. 깊이 대비 처리는 기존 막 재질에만 적용합니다.</p>
+      <p><strong>9. Desktop / mobile 시각 QA</strong>필수 6개 화면을 실제 Chrome에서 캡처하고 직접 검토했습니다. 1440px desktop, 390px mobile, 추가 320px 화면에서 라벨·컨트롤·가로 넘침을 확인했습니다. 화면별 전후 비교는 아래에 있습니다.</p>
+      <p><strong>10. 회귀 검사</strong>수정 전과 후 모두 브라우저 29개 검사 PASS, 각 35개 캡처. check-interior, check-cell, check-molecules PASS. Whole Cell, 막 patch, 7종 지질 3D/2D, PS·비대칭성, 터치 확대, reduced-motion, Module 2/3 통과. 브라우저 오류 0개.</p>
+      <p><strong>11. 남아 있는 한계</strong>교육용 입자 표본 모델이라 확대에서는 머리들이 여전히 촘촘합니다. 입구의 빈 공간은 작으며 임의 회전 각도에서는 안쪽 벽에 가려질 수 있습니다. 크기·밀도·절개는 실측 표현이 아닙니다. 모바일은 브라우저 기기 모사이며 실물 기기 검증과 2~3초 인지 시간의 사용자 실험은 하지 않았습니다.</p>
+    </div>
+  </section>
+  <section>
+    <h2>Overview — 앞뒤 대비와 막의 연결 형태</h2>
+    <div class="pair">
+      <figure><figcaption>Before</figcaption><a href="before/desktop-overview.png"><img src="before/desktop-overview.png" alt="수정 전 overview"></a></figure>
+      <figure><figcaption>After</figcaption><a href="after/desktop-overview.png"><img src="after/desktop-overview.png" alt="수정 후 overview"></a></figure>
+    </div>
+    <p class="note">뒤쪽도 입자로 남기면서 대비를 낮췄습니다. 구조를 삭제하거나 면으로 대체하지 않았습니다.</p>
+  </section>
+  <section>
+    <h2>T-tubule — 입구 중심의 빈 공간</h2>
+    <div class="pair">
+      <figure><figcaption>Before</figcaption><a href="before/desktop-tubule.png"><img src="before/desktop-tubule.png" alt="수정 전 T소관 입구" loading="lazy"></a></figure>
+      <figure><figcaption>After</figcaption><a href="after/desktop-tubule.png"><img src="after/desktop-tubule.png" alt="수정 후 T소관 입구" loading="lazy"></a></figure>
+    </div>
+    <p class="note">중앙의 빈 영역과 그 앞뒤의 파란 수용성 공간 표식을 확인할 수 있습니다. 관벽과 함입 경계는 같은 곡면입니다.</p>
+  </section>
+  <section>
+    <h2>Triad — 가운데 빈 T소관과 양옆 SR</h2>
+    <div class="pair">
+      <figure><figcaption>Before</figcaption><a href="before/desktop-triad.png"><img src="before/desktop-triad.png" alt="수정 전 triad" loading="lazy"></a></figure>
+      <figure><figcaption>After</figcaption><a href="after/desktop-triad.png"><img src="after/desktop-triad.png" alt="수정 후 triad" loading="lazy"></a></figure>
+    </div>
+    <p class="note">T소관 위쪽의 빈 내강이 더 크게 드러납니다. 양쪽 접합 틈과 개별 지질의 색 체계는 유지했습니다.</p>
+  </section>
+  <section>
+    <h2>Triad detail — 융합하지 않는 두 막 사이의 틈</h2>
+    <div class="pair">
+      <figure><figcaption>Before</figcaption><a href="before/desktop-triad-detail.png"><img src="before/desktop-triad-detail.png" alt="수정 전 triad 접합 틈" loading="lazy"></a></figure>
+      <figure><figcaption>After</figcaption><a href="after/desktop-triad-detail.png"><img src="after/desktop-triad-detail.png" alt="수정 후 triad 접합 틈" loading="lazy"></a></figure>
+    </div>
+    <p class="note">두 막 사이를 중심에 두고 틈을 가리킵니다. 실제 곡면 사이 거리는 그대로이며, 기존 입자 기호 폭의 미세조정만 반영되었습니다.</p>
+  </section>
+  <section>
+    <h2>모바일 확인</h2>
+    <div class="mobile">
+      <figure><figcaption>390px · Overview</figcaption><a href="after/mobile-overview.png"><img src="after/mobile-overview.png" alt="390px 모바일 전체 막" loading="lazy"></a></figure>
+      <figure><figcaption>390px · Triad</figcaption><a href="after/mobile-triad.png"><img src="after/mobile-triad.png" alt="390px 모바일 triad" loading="lazy"></a></figure>
+      <figure><figcaption>320px · Triad</figcaption><a href="regression/mobile-320-triad.png"><img src="regression/mobile-320-triad.png" alt="320px 모바일 triad" loading="lazy"></a></figure>
+    </div>
+    <p><a href="after/mobile-overview-layout.png">390px 전체 UI</a> · <a href="regression/mobile-320-interior.png">320px UI와 컨트롤</a> · <a href="regression/mobile-16-tubule-opening.png">모바일 T소관 입구</a></p>
+  </section>
+  <section>
+    <h2>시각 판정</h2>
+    <ul>
+      <li>PASS — Overview에서 입자보다 연결 형태가 먼저 읽히고 복잡도가 낮아짐.</li>
+      <li>PASS — T소관 입구 중심의 빈 공간과 세포외 표식 연결이 더 잘 드러남.</li>
+      <li>PASS — Triad 중앙의 hollow 구조와 두 접합 틈이 동시에 보임.</li>
+      <li>PASS — Detail에서 접합 틈, 마주 보는 cytosolic 머리, 두 막의 독립성이 한 화면에 드러남.</li>
+      <li>PASS — Myofibril과 기본 비표시 NMJ보다 막이 시각적 중심을 유지함.</li>
+      <li>PASS — Bilayer 방향·함입 경계·내강·독립 SR·gap 검사 유지.</li>
+      <li>PASS — 390px / 320px에서 컨트롤 가로 넘침 없음, 모바일 확대·회전과 스케일 이동 정상.</li>
+    </ul>
+    <p class="note">시각 판정은 캡처와 로컬 미리보기의 직접 검토 결과입니다. 사용자 실험 결과를 뜻하지 않습니다.</p>
+  </section>
+  <section>
+    <h2>렌더링 비용 / 검증 근거</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>장면</th><th>Draw call 전 → 후</th><th>부품 인스턴스 전 → 후</th><th>삼각형 전 → 후</th></tr></thead>
+      <tbody>
+        <tr><td>Desktop overview</td><td>11 → 11</td><td>42,856 → 42,606</td><td>1,739,884 → 1,729,152</td></tr>
+        <tr><td>Desktop triad</td><td>10 → 10</td><td>52,949 → 51,654</td><td>2,134,280 → 2,082,932</td></tr>
+        <tr><td>Mobile overview</td><td>11 → 11</td><td>30,268 → 29,906</td><td>1,064,816 → 1,052,416</td></tr>
+      </tbody>
+    </table></div>
+    <p>샘플 지질: desktop 25,351 → 25,099 / compact 17,800 → 17,642. 기존 인스턴스 버퍼 재사용 검사도 통과했습니다.</p>
+    <p>경계 일치 오차: funnel–tube 0, shell–funnel 약 1.78×10⁻¹⁵. neck 법선의 최소 내적 0.991355. 모든 LOD에 대한 보수적 head-envelope gap은 0.4132로 양수입니다.</p>
+    <p class="note">프레임 시간 원본은 JSON에 포함되어 있습니다. 실행 당시 동시 미리보기 등 부하가 달라 전후 FPS를 성능 개선율로 해석하지 않습니다. 위 표는 실제 장면별 렌더 수치입니다.</p>
+    <p><code>node scripts/qa/check-interior.mjs</code> · <code>node scripts/qa/check-cell.mjs</code> · <code>node scripts/qa/check-molecules.mjs</code> · <code>node scripts/qa/check-interior-browser.mjs</code> · <code>node scripts/qa/capture-bilayers.mjs</code></p>
+    <p class="note">기존 Playwright와 설치된 Chrome을 사용했습니다. 새 패키지나 런타임 의존성은 추가하지 않았습니다.</p>
+  </section>
+</main>
+</html>

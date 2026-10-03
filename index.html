@@ -59,18 +59,19 @@
         <span class="membrane-scale__title">관찰 스케일</span>
         <button type="button" class="btn btn--small" data-m1="cell" aria-pressed="true">세포 전체</button>
         <span class="membrane-scale__arrow" aria-hidden="true">↔</span>
-        <button type="button" class="btn btn--small" data-m1="interior" aria-pressed="false">세포 내부</button>
+        <button type="button" class="btn btn--small" data-m1="interior" aria-pressed="false">세포 속 막 구조</button>
         <span class="membrane-scale__arrow" aria-hidden="true">↔</span>
         <button type="button" class="btn btn--small" data-m1="membrane" aria-pressed="false">막 확대</button>
         <span class="membrane-scale__molecule" id="m1-scale-molecule">↔ 개별 지질</span>
         <button type="button" class="btn btn--small membrane-scale__cut" data-m1="cutaway" aria-pressed="false">단면 보기</button>
       </div>
       <div class="interior-tools" id="m1-interior-tools" hidden>
-        <p class="interior-tools__eyebrow"><b>응용 예시 · 골격근 섬유</b><span>Cell Interior · 길이 방향으로 연 단면</span></p>
-        <div class="interior-tools__buttons" role="group" aria-label="세포 내부 관찰 모드">
-          <button type="button" class="btn btn--small" data-m1="interior-overview" aria-pressed="true">전체 구조</button>
+        <p class="interior-tools__eyebrow"><b>세포 속 막 구조</b><span>응용 예시 · 골격근 섬유에서 본 막과 구획화</span></p>
+        <div class="interior-tools__buttons" role="group" aria-label="세포 속 막 구조 관찰 모드">
+          <button type="button" class="btn btn--small" data-m1="interior-overview" aria-pressed="true">막 전체 보기</button>
           <button type="button" class="btn btn--small" data-m1="interior-continuity" aria-pressed="false">막 연결성</button>
-          <button type="button" class="btn btn--small" data-m1="interior-excitation" aria-pressed="false">흥분 전달</button>
+          <button type="button" class="btn btn--small" data-m1="interior-tubule" aria-pressed="false">T소관 함입</button>
+          <button type="button" class="btn btn--small" data-m1="interior-membrane-zoom" aria-pressed="false">개별 지질까지</button>
           <button type="button" class="btn btn--small" data-m1="interior-triad" aria-pressed="false">Triad 확대</button>
         </div>
       </div>
@@ -82,11 +83,12 @@
       </div>
       <p class="interior-sequence" id="m1-interior-sequence" role="status" hidden></p>
       <div class="interior-key" id="m1-interior-key" hidden aria-label="막과 수용성 공간의 연결 관계">
-        <span class="interior-key__a"><b>A · 세포막 계통</b>근섬유막 ↔ T소관 막<br>세포 밖의 물 ↔ T소관 내강</span>
-        <span class="interior-key__b"><b>B · 독립된 근소포체</b>SR 막과 내강<br>T소관과 좁은 틈을 사이에 둠</span>
-        <span class="interior-key__c"><b>C · 세포질</b>근원섬유 사이의 수용성 공간<br>T소관·SR 내강의 바깥</span>
+        <span class="interior-key__a"><b>A · 연속된 이중층</b>근섬유막 ↔ T소관 막<br>파란 마름모 · 세포 밖 ↔ T소관 내강</span>
+        <span class="interior-key__b"><b>B · 별개의 이중층</b>SR 막 · 연보라 마름모는 SR 내강<br>T소관과 좁은 틈을 사이에 둠</span>
+        <span class="interior-key__c"><b>C · 세포질 접합 틈</b>cytosolic 머리 ↔ cytosolic 머리<br>T소관·SR 내강의 바깥</span>
       </div>
-      <p class="stage__hint">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · 터치 = 회전 / 두 손가락 확대 · <b>세포 전체·막 확대의 지질이나 아래 범례를 선택하면 원자 단위 3D 구조</b>로 이동합니다.</p>
+      <p class="stage__hint stage__hint--membrane">드래그 = 회전 · 캔버스를 한 번 클릭한 뒤 휠 = 확대/축소 · 터치 = 회전 / 두 손가락 확대 · <b>세포 전체·막 확대의 지질이나 아래 범례를 선택하면 원자 단위 3D 구조</b>로 이동합니다.</p>
+      <p class="stage__hint stage__hint--interior">드래그로 내부 둘러보기 · 클릭 후 휠 또는 두 손가락으로 확대 · <b>막 확대</b>로 지질 이중층 관찰</p>
       <p class="membrane-scale__note" id="m1-scale-note">막 두께와 지질 크기는 구조를 관찰하기 위해 실제 비율보다 과장되어 있습니다.</p>
 
       <div class="controls" role="group" aria-label="모듈 1 조작">
@@ -112,18 +114,41 @@
       </div>
 
       <div class="panel__block interior-panel" id="m1-interior-panel" hidden>
-        <p class="panel__eyebrow">구조에 가까이 가기</p>
-        <div class="interior-focus" role="group" aria-label="세포 내부 관심 구조">
-          <button type="button" class="btn btn--small" data-m1="interior-nmj" aria-pressed="false">신경근접합부 · NMJ</button>
-          <button type="button" class="btn btn--small" data-m1="interior-tubule" aria-pressed="false">T소관 입구</button>
-          <button type="button" class="btn btn--small" data-m1="interior-sr" aria-pressed="false">SR 그물망</button>
+        <p class="panel__eyebrow">막을 따라 가까이 보기</p>
+        <div class="interior-focus" role="group" aria-label="세포 속 막 구조 가까이 관찰">
+          <button type="button" class="btn btn--small" data-m1="interior-sarcolemma" aria-pressed="false">근섬유막</button>
+          <button type="button" class="btn btn--small" data-m1="interior-cross-section" aria-pressed="false">이중층 단면</button>
+          <button type="button" class="btn btn--small" data-m1="interior-lumen" aria-pressed="false">T소관 내강</button>
+          <button type="button" class="btn btn--small" data-m1="interior-sr" aria-pressed="false">SR 막관</button>
+          <button type="button" class="btn btn--small" data-m1="interior-sr-lumen" aria-pressed="false">SR 내강</button>
+          <button type="button" class="btn btn--small" data-m1="interior-cisterna" aria-pressed="false">종말수조</button>
+          <button type="button" class="btn btn--small" data-m1="interior-triad-detail" aria-pressed="false">접합 틈 · 두 막</button>
+          <button type="button" class="btn btn--small" data-m1="interior-compare" aria-pressed="false">막 종류 비교</button>
         </div>
-        <ul class="bullets interior-concepts">
-          <li>T소관은 <b>근섬유막이 안으로 함입된 구조</b>입니다. 내강은 세포 바깥 공간과 이어집니다.</li>
-          <li>SR은 <b>별개의 막 구획</b>입니다. 두 종말수조가 T소관 양옆에서 삼합체(triad)를 이룹니다.</li>
-          <li>NMJ는 표면에 있습니다. 흥분은 근섬유막을 따라 전파된 뒤 T소관을 통해 내부로 전달됩니다.</li>
-        </ul>
-        <p class="note">모든 세포의 일반 구조가 아닌 골격근의 예시입니다. 막 두께, T소관 지름, SR 크기, 근원섬유 간격, NMJ와 내부 구조의 거리 및 전체 상대 비율을 관찰하기 쉽게 조정했습니다.</p>
+        <div class="composition-compare" id="m1-composition-compare" hidden>
+          <p><b>근섬유막 / T소관</b><br>바깥·내강 쪽 PC · SM 선호<br>세포질 쪽 PE · PS · PI · PIP2 선호<br>회색 콜레스테롤 표식이 더 많음</p>
+          <p><b>SR membrane</b><br>PC · PE 중심의 별도 모형<br>콜레스테롤 표식이 더 적음<br>SR의 정량적 leaflet 비대칭은 주장하지 않음</p>
+          <small>상대적 경향을 위한 모형입니다. 실제 비율·분자 수 또는 100%의 leaflet 독점을 뜻하지 않습니다.</small>
+        </div>
+        <details class="interior-details interior-optional" id="m1-interior-optional">
+          <summary>보조 관찰 · 신경과 흥분 전달</summary>
+          <div class="interior-tools__buttons">
+            <button type="button" class="btn btn--small" data-m1="interior-nmj" aria-pressed="false">NMJ 위치</button>
+            <button type="button" class="btn btn--small" data-m1="interior-excitation" aria-pressed="false">흥분 전달</button>
+          </div>
+        </details>
+        <details class="interior-details" id="m1-interior-details">
+          <summary>자세히 보기 · 막 연결성과 모형 안내</summary>
+          <p class="panel__caption" id="m1-interior-description"></p>
+          <ul class="bullets interior-concepts">
+            <li>T소관은 <b>근섬유막이 안으로 함입된 구조</b>입니다. 내강은 세포 바깥 공간과 이어집니다.</li>
+            <li>SR은 <b>별개의 막 구획</b>입니다. 두 종말수조가 T소관 양옆에서 삼합체(triad)를 이룹니다.</li>
+            <li>접합 틈에는 양쪽 막의 <b>cytosolic leaflet</b>이 마주 봅니다. 꼬리는 각각 자기 막 중심에 있습니다.</li>
+          </ul>
+          <p class="note">모든 세포의 일반 구조가 아닌 골격근의 예시입니다. 공간 관계와 막의 연결성은 보존하지만 크기와 간격은 교육용으로 조정했습니다. 막 두께, T소관 지름, SR 크기, 근원섬유 간격, NMJ와 내부 구조의 거리 및 전체 상대 비율은 실제와 다릅니다. 근원섬유의 수와 지름도 시각적 밀도를 위한 표현이며 실제 개수를 뜻하지 않습니다. 관찰 편의를 위해 일부 근원섬유와 막을 절개하고 일부 SR만 강조했습니다.</p>
+          <p class="note">골격근 일부를 표현한 교육용 단면입니다. T소관도 일부 절개했으며, 잘린 끝은 관찰 범위의 경계입니다. 살아 있는 관이 세포질로 열려 있다는 뜻이 아닙니다. 물 표식은 연결된 공간을 나타내는 정적인 표시이며 유체 흐름을 재현하지 않습니다.</p>
+          <p class="note">SR 관과 종말수조의 앞 벽을 관찰용으로 절개했습니다. 두 SR 가지의 연결은 관찰 범위 밖에 있습니다. 파란 물 표식은 세포 밖과 T소관, 연보라 표식은 SR 내강을 가리킵니다. 막 색은 지질 종류의 색이며 모든 막의 조성이 같지는 않습니다.</p>
+        </details>
       </div>
 
       <div class="panel__block panel__block--detail" id="m1-detail" hidden>
@@ -133,6 +158,8 @@
         <button type="button" class="btn btn--small" data-m1="back">← 막 전체로 돌아가기</button>
       </div>
 
+      <details class="membrane-foundations" id="m1-foundations" open>
+        <summary>지질 이중층의 핵심 개념 더 보기</summary>
       <div class="panel__block">
         <p class="panel__eyebrow">핵심 개념</p>
         <ul class="bullets">
@@ -158,6 +185,7 @@
         ※ 여기 표시한 조성은 <b>동물 세포 원형질막의 대표적 경향</b>을 단순화한 것입니다. 실제 조성은 세포 종류,
         소기관 막의 종류, 세포의 상태에 따라 달라지며 고정된 비율이 아닙니다.
       </p>
+      </details>
     </aside>
   </div>
 </section>

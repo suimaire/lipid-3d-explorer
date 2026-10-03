@@ -1,0 +1,284 @@
+{
+  "status": "PASS",
+  "url": "http://127.0.0.1:4173/?qa=",
+  "screenshots": [
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-01-interior.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-01-scene.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-02-rotated.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-03-opposite-rotation.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-04-axial-looking.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-05-continuity.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-06-tubule-opening.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-07-tubule-lumen.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-08-sr-network.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-09-nmj.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-sarcolemma.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-cross-section.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-sr-lumen.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-terminal-cisterna.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-junction-leaflets.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-individual-lipids.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-composition-compare.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-10-triad.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-12-panel-collapsed.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-12-panel-expanded.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-11-excitation-middle.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-13-interior-to-patch.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\desktop-patch-result.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\regression-whole-cell-cutaway.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-resized-desktop.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\regression-module2.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\regression-module3.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-14-interior.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-15-controls.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-16-tubule-opening.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-17-triad.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-18-information.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-320-interior.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-320-triad.png",
+    "D:\\Codex\\260831 biochemistry\\lipid-3d-explorer\\docs\\qa\\membrane-interior\\polish\\baseline-regression\\mobile-320-information.png"
+  ],
+  "checks": [
+    "Desktop interior scene/panel ratio and canvas height passed",
+    "desktop continuity: no horizontal overflow or clipped controls",
+    "desktop tubule: no horizontal overflow or clipped controls",
+    "desktop lumen: no horizontal overflow or clipped controls",
+    "desktop sr: no horizontal overflow or clipped controls",
+    "desktop nmj: no horizontal overflow or clipped controls",
+    "desktop sarcolemma: no horizontal overflow or clipped controls",
+    "desktop cross-section: no horizontal overflow or clipped controls",
+    "desktop sr-lumen: no horizontal overflow or clipped controls",
+    "desktop cisterna: no horizontal overflow or clipped controls",
+    "desktop triad-detail: no horizontal overflow or clipped controls",
+    "desktop membrane-zoom: no horizontal overflow or clipped controls",
+    "desktop compare: no horizontal overflow or clipped controls",
+    "desktop triad: no horizontal overflow or clipped controls",
+    "Interior explanation native details preserves content and toggles both ways",
+    "Desktop drag, labels, spin, reset, finite excitation and all interior modes exercised",
+    "Whole Cell cutaway/asymmetry/PS, patch modes, all 7 lipid 3D/2D structures, FOV restoration and scale return passed",
+    "desktop resized to 390px: no horizontal overflow or clipped controls",
+    "Canvas lipid picking, 2D → interior, label preference, rapid transition input lock and tab interruption passed",
+    "Module 2/3 step controls, PIP2 comparison, beta reset and return to Module 1 passed",
+    "390px interior: no horizontal overflow or clipped controls",
+    "390px triad: no horizontal overflow or clipped controls",
+    "390px whole cell: no horizontal overflow or clipped controls",
+    "390px initial/triad views, controls, touch pinch, reset and scale changes passed",
+    "320px interior: no horizontal overflow or clipped controls",
+    "320px triad: no horizontal overflow or clipped controls",
+    "320px expanded explanation: no horizontal overflow or clipped controls",
+    "320px overview/triad, expanded explanation and unclipped controls passed",
+    "Reduced-motion scale changes are immediate and remain operable"
+  ],
+  "rendering": {
+    "desktop-interior": {
+      "viewMode": "interior",
+      "scale": "interior",
+      "mode": "overview",
+      "cutaway": false,
+      "transitioning": false,
+      "selectedLipid": null,
+      "compact": false,
+      "meshes": 14,
+      "lod": [
+        {
+          "level": "far",
+          "lipids": 6373
+        },
+        {
+          "level": "medium",
+          "lipids": 0
+        },
+        {
+          "level": "near",
+          "lipids": 0
+        }
+      ],
+      "visibleLipids": 6373,
+      "systems": {
+        "plasma": 5006,
+        "sr": 1367
+      },
+      "totalSampledLipids": 25351,
+      "batches": 8,
+      "partInstances": 42856,
+      "myofibrils": 5,
+      "nmjVisible": false,
+      "topology": {
+        "continuousSarcolemmaTubule": true,
+        "srSeparate": true,
+        "lumenOpenToExtracellular": true,
+        "teachingLumenWindow": true,
+        "junctionalGap": 0.6
+      },
+      "excitationStep": 0,
+      "excitationComplete": false,
+      "excitationElapsed": 0,
+      "cameraRadius": 34,
+      "cameraFov": 48,
+      "minRadius": 4,
+      "maxRadius": 140,
+      "drawCalls": 11,
+      "triangles": 1739884,
+      "viewport": "1440×1150",
+      "samples": 120,
+      "measuredAt": "2026-10-03T03:20:37.764Z",
+      "canvas": "874×546",
+      "camera": {
+        "fov": 48,
+        "theta": 0.52,
+        "phi": 1.18,
+        "radius": 34,
+        "target": [
+          0,
+          -0.5,
+          0
+        ]
+      },
+      "fps": 169.5,
+      "medianMs": 6.3,
+      "p95Ms": 6.9
+    },
+    "desktop-triad": {
+      "viewMode": "interior",
+      "scale": "interior",
+      "mode": "triad",
+      "cutaway": false,
+      "transitioning": false,
+      "selectedLipid": null,
+      "compact": false,
+      "meshes": 14,
+      "lod": [
+        {
+          "level": "far",
+          "lipids": 182
+        },
+        {
+          "level": "medium",
+          "lipids": 410
+        },
+        {
+          "level": "near",
+          "lipids": 5452
+        }
+      ],
+      "visibleLipids": 6044,
+      "systems": {
+        "plasma": 1467,
+        "sr": 4577
+      },
+      "totalSampledLipids": 25351,
+      "batches": 8,
+      "partInstances": 52949,
+      "myofibrils": 5,
+      "nmjVisible": false,
+      "topology": {
+        "continuousSarcolemmaTubule": true,
+        "srSeparate": true,
+        "lumenOpenToExtracellular": true,
+        "teachingLumenWindow": true,
+        "junctionalGap": 0.6
+      },
+      "excitationStep": 0,
+      "excitationComplete": false,
+      "excitationElapsed": 0,
+      "cameraRadius": 15.999933252518074,
+      "cameraFov": 48,
+      "minRadius": 4,
+      "maxRadius": 140,
+      "drawCalls": 10,
+      "triangles": 2134280,
+      "viewport": "1440×1150",
+      "samples": 120,
+      "measuredAt": "2026-10-03T03:20:55.294Z",
+      "canvas": "874×546",
+      "camera": {
+        "fov": 48,
+        "theta": 0.06000056873213312,
+        "phi": 1.1200001131747377,
+        "radius": 15.999933252518074,
+        "target": [
+          0.0000052708972549536416,
+          1.247399303627373,
+          1.5859571232424488
+        ]
+      },
+      "fps": 158,
+      "medianMs": 6.4,
+      "p95Ms": 8.9
+    },
+    "mobile-interior": {
+      "viewMode": "interior",
+      "scale": "interior",
+      "mode": "overview",
+      "cutaway": false,
+      "transitioning": false,
+      "selectedLipid": null,
+      "compact": true,
+      "meshes": 14,
+      "lod": [
+        {
+          "level": "far",
+          "lipids": 4516
+        },
+        {
+          "level": "medium",
+          "lipids": 0
+        },
+        {
+          "level": "near",
+          "lipids": 0
+        }
+      ],
+      "visibleLipids": 4516,
+      "systems": {
+        "plasma": 3526,
+        "sr": 990
+      },
+      "totalSampledLipids": 17800,
+      "batches": 8,
+      "partInstances": 30268,
+      "myofibrils": 5,
+      "nmjVisible": false,
+      "topology": {
+        "continuousSarcolemmaTubule": true,
+        "srSeparate": true,
+        "lumenOpenToExtracellular": true,
+        "teachingLumenWindow": true,
+        "junctionalGap": 0.6
+      },
+      "excitationStep": 0,
+      "excitationComplete": false,
+      "excitationElapsed": 0,
+      "cameraRadius": 48.94280898876404,
+      "cameraFov": 48,
+      "minRadius": 4,
+      "maxRadius": 140,
+      "drawCalls": 11,
+      "triangles": 1064816,
+      "viewport": "390×844",
+      "samples": 120,
+      "measuredAt": "2026-10-03T03:22:04.706Z",
+      "canvas": "356×438",
+      "camera": {
+        "fov": 48,
+        "theta": 0.52,
+        "phi": 1.18,
+        "radius": 48.94280898876404,
+        "target": [
+          0,
+          -0.5,
+          0
+        ]
+      },
+      "fps": 153.9,
+      "medianMs": 6.7,
+      "p95Ms": 9.3
+    }
+  },
+  "errors": [],
+  "environment": {
+    "browser": "installed Chrome, headless",
+    "mobile": "touch/viewport emulation; not a physical phone",
+    "performance": "120 real RAF intervals after 30 warm-up frames; machine-specific measurements"
+  }
+}

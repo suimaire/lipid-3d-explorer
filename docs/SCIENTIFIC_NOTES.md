@@ -63,80 +63,65 @@
 관련 원저: [Lorent et al., 2020 — plasma membrane asymmetry](https://www.nature.com/articles/s41589-020-0529-6),
 [Suzuki et al., 2013 — Xkr8 and apoptotic PS exposure](https://pubmed.ncbi.nlm.nih.gov/23845944/).
 
-### 세포 내부 — 응용 예시 · 골격근 섬유
+### 세포 내부 — 곡면, 함입, 별개의 지질 이중층
 
-이 장면은 **골격근 섬유에서의 막 구획화**를 보여 주는 대표 모형입니다. 앞 단계의 구형 Whole Cell은
-"인지질 이중층이 닫힌 경계를 만든다"는 개념 모형으로 그대로 유지합니다. 세포 전체 → 세포 내부 전환은
-서로 다른 교육용 장면 사이의 이동이며, 구형 세포가 근섬유로 morph되거나 실제 근육세포의 발생을
-보여 주는 과정이 아닙니다. 근섬유의 긴 축을 따라 일부만 잘라 그렸으며 **모든 세포가 이 구조를 가지지는 않습니다**.
+생체막은 인지질을 중심으로 한 lipid bilayer입니다. Cell Interior는 골격근을 예로 들어
+**같은 분자 표현이 곡면과 관, 독립 구획을 만드는 방식**을 보여줍니다. 모든 세포가 골격근의
+T소관·triad를 갖는다는 뜻이 아니며, 앞의 구형 Whole Cell이 근육세포로 변하는 과정도 아닙니다.
 
-#### 지킨 공간 관계
+| 위치 | 물과 접하는 머리 | 꼬리 방향 / 연결 관계 |
+| --- | --- | --- |
+| Sarcolemma exoplasmic leaflet | 세포 바깥 | 자기 막의 소수성 중심 |
+| Sarcolemma cytosolic leaflet | 세포질 | 자기 막의 소수성 중심 |
+| T소관 exoplasmic leaflet | T소관 내강 | Sarcolemma의 exoplasmic leaflet과 연속 |
+| T소관 cytosolic leaflet | 관 바깥 세포질·접합 틈 | 자기 막의 중심 |
+| SR cytosolic leaflet | SR 바깥 세포질·접합 틈 | 자기 막의 중심 |
+| SR luminal leaflet | 독립된 SR 내강 | 자기 막의 중심 |
 
-| 구조 | 장면에서 구분하는 관계 |
-| --- | --- |
-| Sarcolemma · 근섬유막 | 바깥 수용성 공간과 내부 cytosol을 구분하는 원형질막 |
-| T-tubule · T소관 | Sarcolemma가 세포 안쪽으로 함입된 연속 막. 별개의 세포소기관이 아님 |
-| T-tubule lumen | 세포외 공간과 연속된 관 안쪽. 세포 안쪽에 보이더라도 cytosol이 아님 |
-| SR · 근소포체 | Myofibril 주위의 별도 막성 network. Sarcolemma/T-tubule과 막이나 lumen이 직접 이어지지 않음 |
-| Terminal cisternae · 종말수조 | SR의 확장된 부분으로, 대표 triad의 T-tubule 양쪽에 배치 |
-| Triad · 삼합체 | T-tubule 하나 + 양쪽 SR 종말수조 두 개. 서로 가까우나 막 사이에 junctional gap이 있음 |
-| NMJ · 신경근접합부 | 세포 바깥 운동뉴런 말단과 표면 motor end plate가 마주함. 대표 triad와 떨어져 배치 |
-| Myofibrils · 근원섬유 | 긴 축을 따라 평행하게 놓아 내부 방향성과 주변 막계의 위치를 알려 주는 보조 구조 |
-
-T-tubule이 표면 막에서 이어지고 외부와 통하는 관계는 전자현미경 연구에서 직접 관찰되었습니다.
-장면에서는 같은 막 색, 연속된 관 입구, 외부와 lumen에 놓인 동일한 물 표지로 이 관계를 드러냅니다.
-물 표지는 공간의 연결성을 뜻하며, 세포외액이 cytosol이나 SR lumen에 직접 들어간다는 뜻은 아닙니다.
+T소관은 원형질막의 연속적인 invagination이며, 내강은 extracellular space와 연결됩니다.
+이를 실제 연속 곡면에서 표본화한 두 leaflet으로 나타냅니다. 세포 바깥과 내강에는 같은 파란
+마름모를 둡니다. 연속된 것은 각각 막과 수용성 공간이지, 물과 막이 같은 물질이라는 뜻이 아닙니다.
 [Franzini-Armstrong & Porter, 1964 — sarcolemmal invaginations and T-system](https://pmc.ncbi.nlm.nih.gov/articles/PMC2106473/).
 
-SR과 T-tubule은 **막 접촉부를 이루는 별개의 막**입니다. 대표 triad는 보이는 간격을 유지하며,
-SR network가 myofibril 주위를 감싸고 종말수조로 이어지게 합니다. T-tubule 쪽의 DHPR/CaV1.1과
-SR 쪽의 RyR1이 흥분–수축 연결에 관여하지만, 기본 장면은 단백질의 원자 구조나 복합체의 작동을
-재현하지 않습니다. [Flucher et al., 1994 — T-tubule/SR junction organization](https://pubmed.ncbi.nlm.nih.gov/7865878/),
-[Protasi et al., 1998 — ryanodine receptors and junction assembly](https://pmc.ncbi.nlm.nih.gov/articles/PMC2141739/).
+SR은 원형질막과 분리된 intracellular membrane compartment입니다. SR의 longitudinal tubule과
+terminal cisterna는 한 곡면의 반지름이 부드럽게 변하는 구조로, 내강에 경계 cap이 없습니다.
+Triad의 SR–T소관 접합에서는 서로 다른 두 bilayer가 틈을 사이에 두고 마주하며 융합하지 않습니다.
+맞은편으로 향하는 머리는 양쪽 모두 **cytosolic leaflet**입니다. 단백질성 접합 구조는 생략했으므로
+모형의 틈은 빈 세포질 공간처럼 보이지만 실제 접합부에 단백질이 없다는 뜻은 아닙니다.
+[Franzini-Armstrong, 1970 — Structure of the Junction in Frog Twitch Fibers](https://doi.org/10.1083/jcb.47.2.488).
 
-#### 막 연결성 보기와 흥분 전달
+#### 조성의 차이를 표현하는 범위
 
-- **A**: Sarcolemma와 T-tubule **막의 연속성**, 세포외 공간과 T-tubule **lumen의 연속성**을 함께 강조합니다.
-  막과 물이 같은 구획이라는 뜻은 아닙니다. 막을 경계로 lumen의 반대편에는 cytosol이 있습니다.
-- **B**: SR membrane과 그 안의 lumen을 별도 내부 구획으로 표시합니다.
-- **C**: Cytosol은 sarcolemma 안쪽이면서 SR lumen과 T-tubule lumen 바깥인 수용성 공간입니다.
+모든 막이 지질 이중층이지만 모든 막의 lipid composition이 동일하지는 않습니다.
+Sarcolemma/T소관에는 기존 막 조각의 PC/SM exoplasmic 선호, PE/PS/PI/PIP2 cytosolic 선호를
+공유하는 교육용 표본을 둡니다. 이를 100%의 독점적 위치로 읽지 않도록 반대 층의 희소 표본도
+포함합니다. 그 희소 표본의 수는 측정된 생리적 분포가 아니며 PIP2가 세포질 쪽에 매우 편중된다는
+핵심은 유지됩니다. 원자 구조·Whole Cell·기존 막 조각의 계산과 분포는 바꾸지 않았습니다.
 
-흥분 전달 보기는 **NMJ → sarcolemma를 따라 전파 → T-tubule 막 → triad의 흥분–수축 연결 → SR에서
-cytosol로 Ca²⁺ 방출** 순서를 강조합니다. NMJ 아래에 triad를 붙인 연속 관으로 만들지 않습니다.
-활동전위가 막을 따라 전파되는 현상과 SR Ca²⁺ 방출을 구별하기 위한 학습용 강조이며,
-움직이는 기호가 전기 신호의 실체이거나 신경전달물질이 SR까지 이동한다는 뜻은 아닙니다.
-[Wang et al., 2022 — action potential propagation and excitation–contraction coupling](https://elifesciences.org/articles/71588).
+SR은 원형질막의 분포를 복사하지 않고 PC/PE 중심에 소량의 PI/PS와 더 적은 콜레스테롤 기호를
+포함하는 별도 모델을 사용합니다. SR 두 leaflet은 같은 표본 가중치를 사용하지만 실제 SR이 정확히
+대칭이라는 주장은 아닙니다. SR의 SM/PIP2 기호 생략 역시 생물학적 완전 부재를 뜻하지 않습니다.
+조성의 차이와 변이는 실제 연구에서 관찰되며, 근육 유형에 따라서도 SR의 조성이 달라집니다.
+[Borchman et al., 1982 — SR lipid composition and muscle type](https://pubmed.ncbi.nlm.nih.gov/6216252/).
 
-#### 의도적으로 단순화한 것
+#### 의도적으로 남긴 교육용 단순화
 
-- **크기와 비율**: 막 두께, T-tubule 지름, SR 크기, myofibril 간격, NMJ와 내부 구조 사이의 거리,
-  전체 구조의 상대 비율을 관찰하기 쉽도록 조정했습니다. 눈금 없는 모형 단위이며 실측 치수로 읽지 않습니다.
-- **Longitudinal cutaway**: 외피의 일부를 실제 geometry에서 제거해 내부가 보이게 합니다.
-  T-tubule 막의 일부도 관찰용으로 절개해 lumen을 드러냅니다. 이 절개는 살아 있는 근섬유의
-  열린 상처나 T-tubule과 cytosol 사이에 원래 존재하는 틈이 아닙니다. 관의 잘린 끝은 표본 경계에서
-  이어지는 구조를 생략한 단면이며, 세포 안에서 관이 자유롭게 끝나 cytosol과 통한다는 뜻이 아닙니다.
-- **반복 구조**: SR과 T-system은 관찰에 필요한 소수의 대표 구간으로 간략화했습니다.
-  구체적인 근육 종류·동물 종의 EM 재구성이 아니며, 모든 triad의 수·위치·분포를 재현하지 않습니다.
-  현재 근섬유 표본은 길이 34 · 지름 14의 모형 단위이며 외피 둘레 약 33.9%를 길이 방향으로
-  제거합니다. 근원섬유는 6개, triad의 접합 틈은 0.34, NMJ와 대표 triad의 길이 방향 간격은
-  14.5입니다. 이 값은 학습용 배치 상수이며 실제 근섬유의 치수나 비율이 아닙니다.
-- **Myofibril**: 여러 평행한 기둥과 약한 표면 무늬로 표시합니다. Actin/myosin의 개별 filament,
-  sarcomere 단백질 배열과 sliding-filament 수축을 구현하지 않습니다.
-- **NMJ와 신호**: 뉴런 말단·motor end plate·두 막 사이의 공간 관계를 도식화했습니다.
-  접합부 주름의 미세구조, ACh 방출·분해, 전류·이온 농도·시간상수는 계산하지 않습니다.
-- **색과 입자**: 막계를 구별하기 위한 색이며 실제 조직의 색이 아닙니다. 물·Ca²⁺ 기호의 개수는
-  실제 분자 수나 농도가 아닙니다. 유체 simulation이나 실제 확산 궤적을 뜻하지 않습니다.
-  흥분 전달은 약 6초간 표면의 띠와 T소관 벽의 고리로 강조하며, 물 표지는 움직이지 않습니다.
-  강조의 지속 시간은 수업용이며 활동전위 전도 시간이나 Ca²⁺ 방출 속도를 나타내지 않습니다.
-- **막 확대 전환**: Sarcolemma의 한 영역으로 접근한 뒤 기존 이중층 조각을 보여 줍니다.
-  Sarcolemma도 지질 이중층이라는 연결을 설명하는 전환이며 동일한 개별 분자를 연속 추적하지 않습니다.
+- **인지질 크기와 밀도는 구조 관찰을 위해 과장·축소되어 있습니다.** 막 두께·관 지름·접합 틈·전체
+  비율도 실제 축척이 아닙니다. 지질 표본 수, 콜레스테롤 표식 수와 LOD는 실제 분자 수나 조성 비율이 아닙니다.
+- `buildLipid`의 구형 머리, 두 꼬리, 콜레스테롤 부품과 지질별 색을 재사용합니다. 두께에 맞춰 꼬리
+  길이는 줄이되 머리는 구형으로 유지합니다. 완전한 원자 시뮬레이션·열운동·에너지 최소화는 없습니다.
+- Sarcolemma 전체의 관찰용 cutaway, T소관과 SR의 앞 벽 절개, 화면 끝의 잘린 관은 학습용입니다.
+  실제 막의 구멍, 세포질로 열린 내강, 세포 안에서 자유롭게 끝나는 관을 뜻하지 않습니다.
+- 분자 기호 사이의 빈 틈은 성긴 표본화의 결과입니다. 실제 막이 다공성 철망이라는 뜻이 아닙니다.
+  확대 때 주변 막을 생략하는 것도 가시성 조정입니다. 지질 머리와 두 꼬리는 far에서도 유지됩니다.
+- SR의 두 대표 가지는 관찰 범위 밖에서 연결된 것으로 간략화합니다. 실제 근원섬유 주변의 광범위한
+  망상 구조나 모든 반복 triad를 재구성하지 않습니다. 종말수조의 접합면도 실제보다 둥글게 표현합니다.
+- 근원섬유는 위치 참고용 저대비 배경 5개입니다. 신경 말단·흥분 전달은 보조 모드입니다.
+  보조 모드의 움직이는 마름모/점은 과정 순서이며 실제 전하·칼슘 이동이나 수축을 계산하지 않습니다.
+- 마름모는 물 분자의 분자 모형이 아닌 수용성 공간의 위치 표지입니다. 파랑은 세포외/T 내강,
+  연보라는 SR 내강입니다. 지질 색은 기존 PC/PE/PS/PI/PIP2/SM 범례를 따릅니다.
 
-#### 학생이 확인할 네 가지
-
-1. T-tubule은 별개 소기관인가? **아니며, sarcolemma의 함입입니다.**
-2. T-tubule 안쪽은 cytosol인가? **아니며, 세포외 공간과 이어진 lumen입니다.**
-3. SR은 T-tubule과 하나의 연속 막인가? **아니며, 별개 내부 막계입니다.**
-4. 왜 두 막이 가까운가? **Triad의 흥분–수축 연결로 SR Ca²⁺ 방출을 조절하기 위해서입니다.**
+[검증 기록](qa/membrane-interior/REPORT.md)은 실제 법선·행렬 검사와 데스크톱/모바일 화면 비교를 포함합니다.
 
 ### 원자 단위 3D 구조에서 쓴 대표 분자 (representative species)
 
@@ -186,7 +171,7 @@ cytosol로 Ca²⁺ 방출** 순서를 강조합니다. NMJ 아래에 triad를 �
 
 - PS가 정상 상태에서 바깥층에 많다고 표현하지 않았습니다.
 - 특정 지방산 조합 하나를 그 지질 class의 유일한 구조인 것처럼 제시하지 않았습니다.
-- PIP2를 바깥층에 두지 않았습니다.
+- 기존 Whole Cell/막 조각에서는 PIP2를 세포질 층에 둡니다. Cell Interior의 희소 반대 층 표본은 위 조성 설명의 범위를 따릅니다.
 - 콜레스테롤을 "나쁜 물질"로 서술하지 않았습니다 — 막의 정상 구성 성분이며 유동성·질서를 조절한다고 썼습니다.
 - 조성을 고정된 절대 비율로 단정하지 않았습니다.
 

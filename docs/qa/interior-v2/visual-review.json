@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "method": "Direct visual inspection of saved real browser screenshots, supplemented by actual rendered geometry assertions and browser interactions.",
+  "automatedBrowserResult": { "status": "PASS", "checks": 22, "screenshots": 28, "errors": [], "report": "after/browser-report.json" },
+  "checks": [
+    { "item": "근원섬유가 충분히 많아 내부가 밀집되어 보임", "result": "PASS", "evidence": "after/desktop-01-interior.png" },
+    { "item": "절개 덕분에 내부 구조는 여전히 관찰 가능", "result": "PASS", "evidence": "after/desktop-03-opposite-rotation.png" },
+    { "item": "뒤쪽 구조의 여러 층으로 깊이가 느껴짐", "result": "PASS", "evidence": "after/desktop-04-axial-looking.png" },
+    { "item": "근원섬유가 6개 큰 막대처럼 보이지 않음", "result": "PASS", "evidence": "after/desktop-01-scene.png" },
+    { "item": "SR이 사각 철망처럼 보이지 않음", "result": "PASS", "evidence": "after/desktop-08-sr-network.png" },
+    { "item": "SR이 무작위로 얽힌 구조처럼 보이지 않음", "result": "PASS", "evidence": "after/desktop-08-sr-network.png" },
+    { "item": "T소관이 독립된 판처럼 보이지 않음", "result": "PASS", "evidence": "after/desktop-07-tubule-lumen.png" },
+    { "item": "T소관이 속이 빈 관처럼 보임", "result": "PASS", "evidence": "after/desktop-07-tubule-lumen.png" },
+    { "item": "T소관 표면 입구를 확인할 수 있음", "result": "PASS", "evidence": "after/desktop-06-tubule-opening.png" },
+    { "item": "세포외 공간과 T소관 내강의 연속성이 보임", "result": "PASS", "evidence": "after/desktop-05-continuity.png; after/desktop-06-tubule-opening.png" },
+    { "item": "T소관과 SR이 융합돼 보이지 않음", "result": "PASS", "evidence": "after/desktop-10-triad.png" },
+    { "item": "Triad가 단 한 번 존재하는 장치처럼 보이지 않음", "result": "PASS", "evidence": "after/desktop-01-interior.png" },
+    { "item": "NMJ가 근섬유막 표면에 마주하는 구조로 읽힘", "result": "PASS", "evidence": "after/desktop-09-nmj.png" },
+    { "item": "NMJ와 triad가 직접 관으로 연결돼 보이지 않음", "result": "PASS", "evidence": "after/desktop-03-opposite-rotation.png; after/desktop-09-nmj.png" },
+    { "item": "기본 카메라가 내부 깊이를 보여줌", "result": "PASS", "evidence": "after/desktop-01-interior.png" },
+    { "item": "설명창보다 3D 장면이 시각적으로 우세함", "result": "PASS", "evidence": "after/desktop-01-interior.png; after/desktop-12-panel-collapsed.png" },
+    { "item": "화면이 과도하게 복잡하지 않음", "result": "PASS", "evidence": "after/desktop-01-interior.png; after/mobile-14-interior.png; after/mobile-320-interior.png" },
+    { "item": "기존 Whole Cell 기능 정상", "result": "PASS", "evidence": "after/regression-whole-cell-cutaway.png; after/browser-report.json" },
+    { "item": "기존 membrane patch 정상", "result": "PASS", "evidence": "after/desktop-patch-result.png; after/desktop-13-interior-to-patch.png" },
+    { "item": "기존 7개 지질의 3D 및 2D 표시와 복귀 정상", "result": "PASS", "evidence": "after/browser-report.json" },
+    { "item": "Module 2/3 단계 조작과 초기화 정상", "result": "PASS", "evidence": "after/regression-module2.png; after/regression-module3.png; after/browser-report.json" }
+  ],
+  "additionalChecks": [
+    "390px와 320px에서 가로 넘침 없음; 관심 구조 버튼 높이 44px 이상; 두 손가락 확대 반응 확인",
+    "설명 접힘/펼침 모두 확인하고 기존 내용 보존",
+    "최종 화면에서 내강 라벨 수정과 SR 선택적 투명 표현 안내 확인",
+    "내부 FOV 48도, 다른 스케일로 복귀 시 기존 42도 복원 확인",
+    "흥분 전달 중간 막 강조와 6초 후 비반복 완료, reduced-motion 즉시 완료 확인"
+  ],
+  "limitations": [
+    "실제 근육 EM 재구성이 아닌 교육용 모형이며 크기, 개수, 간격이 실측값은 아님",
+    "모바일 확인은 데스크톱 Chrome의 화면 크기 및 터치 에뮬레이션으로 실제 휴대폰 GPU 성능 검증은 아님",
+    "기본보다 약 30도 축 방향으로 더 돌리면 가까운 표본 끝이 화면 아래 가장자리에 닿거나 일부 잘릴 수 있음; 기본 및 별도 axial-looking 캡처에서는 주요 내부 관계를 확인 가능",
+    "최종 headless 프레임 주기와 수정 전 주기가 달라 FPS 수치로 성능 향상을 주장하지 않음"
+  ]
+}

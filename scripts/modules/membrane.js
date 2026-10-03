@@ -46,34 +46,21 @@ const LEAFLET_Y = 2.6; // 머리 높이(±)
 /* 대표적 경향을 단순화한 조성 (고정 비율이 아님을 패널에 명시) */
 
 const CAPTIONS = {
-  interior: {
-    title: "세포 내부 · 골격근 섬유의 막 구획화",
-    text: "길게 뻗은 근섬유의 일부를 길이 방향으로 열었습니다. 회색 근원섬유 사이에서 파란 근섬유막의 함입인 T소관과 별개의 보라색 근소포체(SR)를 찾아보세요. [막 연결성]으로 공간을 비교하고, [막 확대]로 근섬유막도 지질 이중층임을 확인할 수 있습니다.",
-  },
-  continuity: {
-    title: "막 연결성 · 안으로 들어온 바깥 공간",
-    text: "A의 파란 막은 근섬유막에서 T소관으로 이어집니다. 파란 물 표식도 세포 바깥에서 T소관 내강까지 이어집니다. 막과 물은 같은 물질이 아니라 각각 연속된 막과 수용성 공간입니다. B의 보라색 SR은 별도의 닫힌 막 구획이며, C의 세포질은 두 내강의 바깥을 채웁니다.",
-  },
-  triad: {
-    title: "삼합체 · 서로 가깝지만 별개의 막",
-    text: "가운데 T소관 양옆에 SR의 종말수조가 하나씩 있습니다. 두 종말수조 + 하나의 T소관이 triad입니다. 파란 막과 보라색 막 사이의 좁은 접합 틈을 확인하세요. 서로 융합하지 않고 흥분–수축 연결을 위해 마주합니다. T소관 내강은 세포 밖과, 종말수조 내강은 SR과 이어집니다.",
-  },
-  nmj: {
-    title: "신경근접합부 · 근섬유 표면에서 시작",
-    text: "운동뉴런 말단이 근섬유막의 운동종판을 마주합니다. 두 세포 사이에는 시냅스 틈이 있습니다. 여기서 유발된 근섬유의 탈분극이 표면을 따라 전파된 뒤 T소관을 통해 내부에 전달됩니다. NMJ와 떨어진 위치의 triad는 별도의 구조입니다.",
-  },
-  tubule: {
-    title: "T소관 · 근섬유막이 안으로 함입된 길",
-    text: "표면의 열린 입구에서 파란 막을 따라 내부로 들어가 보세요. T소관은 분리된 세포소기관이 아니라 근섬유막의 연속입니다. 입구와 내강의 물 표식은 세포 밖의 수용성 공간이 안쪽까지 이어짐을 뜻하며, 내강은 세포질이 아닙니다.",
-  },
-  sr: {
-    title: "근소포체 · 근원섬유를 감싸는 독립된 막",
-    text: "보라색 SR은 근원섬유 둘레와 길이 방향으로 이어지는 막성 그물망입니다. 넓어진 종말수조도 이 SR에 속합니다. SR은 Ca²⁺를 저장하는 독립된 내부 구획으로, 근섬유막이나 T소관과 융합하지 않습니다.",
-  },
-  excitation: {
-    title: "흥분 전달 · 표면에서 내부로",
-    text: "NMJ → 운동종판 → 근섬유막을 따라 전파 → T소관 → triad → SR의 Ca²⁺ 방출 순서로 구조를 짧게 강조합니다. 색 강조는 과정의 순서를 나타내는 교육용 표시이며, 움직이는 전기 입자나 실제 시간·속도를 재현한 것이 아닙니다. 다시 누르면 재생합니다.",
-  },
+  "interior": { title: "같은 이중층, 이어지거나 나뉘는 공간", text: "근섬유막(sarcolemma)도 지질 이중층입니다. 그 막이 안으로 함입된 T소관의 내강은 세포 밖과 이어집니다. SR은 자체 내강을 감싼 별개의 이중층입니다. Triad에서는 이 막들이 세포질 틈을 두고 가까이 마주하며, 융합하지 않습니다." },
+  "continuity": { title: "이어지는 막 · 구분되는 공간", text: "근섬유막의 exoplasmic leaflet은 함입을 따라 T소관 내강을 향합니다. 같은 파란 물 표식이 세포 밖과 내강에 있습니다. SR의 연보라 표식은 별도의 내강입니다." },
+  "sarcolemma": { title: "근섬유막 · 두 층의 인지질", text: "바깥층 머리는 세포외 공간, 안쪽층 머리는 세포질을 향합니다. 회색 두 꼬리는 서로 마주 보며 소수성 중심을 만듭니다. 기존 막 조각과 같은 지질 모델입니다." },
+  "cross-section": { title: "막 단면 · 머리—꼬리—머리", text: "절개 경계에서 두 머리 층 사이의 꼬리들을 확인하세요. 각 인지질에는 두 소수성 꼬리가 있으며, 곡면의 법선을 따라 방향이 달라집니다." },
+  "tubule": { title: "T소관 입구 · 이중층이 안으로 휘다", text: "근섬유막이 입구에서 굽어 빈 내강을 둘러쌉니다. 파란 마름모를 따라 세포 밖에서 내강까지 이어지는 공간을 보세요. 내강 쪽 머리는 exoplasmic leaflet, 관 바깥 세포질 쪽 머리는 cytosolic leaflet입니다." },
+  "lumen": { title: "T소관 내강 · 안으로 이어진 바깥 공간", text: "절개된 벽의 두 leaflet과 빈 내강을 비교하세요. 내강에 닿는 머리는 exoplasmic leaflet입니다. 깊이 들어와도 세포 밖과의 연결은 유지됩니다." },
+  "sr": { title: "SR 막관 · 독립된 이중층", text: "SR 관의 두 leaflet이 자체 내강을 둘러쌉니다. cytosolic 머리는 세포질로, luminal 머리는 SR 내강으로 향합니다. PC·PE 중심의 별도 교육용 조성을 사용합니다." },
+  "sr-lumen": { title: "SR 내강 · 별도로 구획된 공간", text: "절개면의 머리—꼬리—머리 두 층을 지나면 SR 내강입니다. 연보라 표식은 이 공간을 가리키며, T소관 내강과 이어지지 않습니다." },
+  "cisterna": { title: "종말수조 · 같은 SR 막이 넓어진 곳", text: "길이 방향 SR 관의 이중층이 연속적으로 넓어져 종말수조가 됩니다. 확장 구간을 가로막는 cap 없이 SR 내강도 그대로 이어집니다." },
+  "triad": { title: "Triad · 세 구획, 두 접합 틈", text: "가운데 빈 T소관과 양옆 SR 종말수조가 각각 이중층으로 내강을 감쌉니다. T소관과 두 SR 사이에는 세포질 틈이 남아 있으며, 서로 융합하지 않습니다. 절개된 앞 벽을 통해 세 내강을 비교하세요." },
+  "triad-detail": { title: "접합 틈 · 가까이 있어도 별개의 막", text: "가운데 빈 띠가 세포질 접합 틈입니다. 양쪽에서 마주 보는 것은 T소관과 SR의 cytosolic 머리이며, 두 막은 융합하지 않습니다. 꼬리는 각각 자기 막의 중심으로 향합니다." },
+  "membrane-zoom": { title: "곡면 속 개별 지질 · 같은 모델의 다른 배율", text: "곡면을 이루는 인지질 머리와 두 꼬리, 그 사이 콜레스테롤을 관찰하세요. 위의 [막 확대]를 누르면 같은 분자 표현을 쓰는 기존 막 조각으로 이어집니다." },
+  "compare": { title: "같은 이중층 · 서로 다른 조성", text: "가운데 T소관은 근섬유막과 같은 비대칭 조성입니다. 양옆 SR은 PC·PE 중심이며 콜레스테롤 표식이 더 적습니다. 색은 막 종류가 아닌 지질 종류를 뜻합니다. 표시 개수는 실제 비율이 아닙니다." },
+  "nmj": { title: "보조 관찰 · 신경근접합부", text: "세포 바깥의 신경 말단을 위치 참고용으로 표시했습니다. 기본 관찰의 주제는 지질 이중층의 함입과 구획화입니다." },
+  "excitation": { title: "보조 관찰 · 흥분 전달 순서", text: "NMJ → 근섬유막 → T소관 → triad → SR Ca²⁺ 방출의 순서만 표시합니다. 움직이는 표식은 전기 입자나 실제 Ca²⁺ 이동을 재현하지 않습니다." },
   cell: {
     title: "세포 전체 · 닫힌 지질 이중층",
     text: "작은 막 조각이 사방으로 이어져 세포 전체를 둘러쌉니다. 바깥층의 머리는 세포 밖의 물과, 안쪽층의 머리는 세포질과 접합니다. 두 층의 꼬리는 막 중심에서 마주 보며, 이 닫힌 경계가 안과 밖을 구획합니다. [단면 보기]로 안쪽을 살펴보고, [막 확대 보기]로 표시된 막 조각에 가까이 가 보세요.",
@@ -118,6 +105,10 @@ const CAPTIONS = {
   },
 };
 
+// Short observation prompts keep the scene primary; the complete explanations
+// above remain available in the native, keyboard-accessible details section.
+const INTERIOR_SUMMARIES = { ...Object.fromEntries(Object.entries(CAPTIONS).map(([key, value]) => [key, value.text])), overview: CAPTIONS.interior.text };
+
 export function createMembraneModule() {
   const viewer = new Viewer("canvas-membrane");
   const els = {
@@ -157,6 +148,9 @@ export function createMembraneModule() {
   const interiorPanel = document.getElementById("m1-interior-panel");
   const interiorKey = document.getElementById("m1-interior-key");
   const interiorSequence = document.getElementById("m1-interior-sequence");
+  const moduleElement = document.getElementById("module-membrane");
+  const foundations = document.getElementById("m1-foundations");
+  let interiorLayout = false;
   if (compact) viewer.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
 
   // A curved outline identifies the SAME upper membrane region approached by the camera.
@@ -437,6 +431,23 @@ export function createMembraneModule() {
       : scale === "interior" ? Math.max(140, ensureInterior().home(viewer.camera.aspect).radius * 2) : 140;
   }
 
+  function updateViewPresentation() {
+    const inInterior = viewMode === "interior";
+    if (interiorLayout !== inInterior) {
+      interiorLayout = inInterior;
+      moduleElement.classList.toggle("module--interior", inInterior);
+      foundations.open = !inInterior;
+    }
+    const fov = inInterior ? 48 : 42;
+    if (viewer.camera.fov !== fov) {
+      viewer.camera.fov = fov;
+      viewer.camera.updateProjectionMatrix();
+    }
+    // Apply the scene-specific layout before computing a camera frame, including
+    // scale handoffs; waiting for ResizeObserver would fit the old canvas width.
+    viewer.resize();
+  }
+
   function ensureInterior() {
     if (interior) return interior;
     interior = createCellInterior({ compact });
@@ -448,31 +459,49 @@ export function createMembraneModule() {
       ["triad", "삼합체 · triad"], ["cisternaLeft", "종말수조 · terminal cisterna"],
       ["cisternaRight", "종말수조 · terminal cisterna"], ["myofibril", "근원섬유 · myofibril"],
       ["cytosol", "세포질 · cytosol"], ["extracellular", "세포 바깥쪽 · extracellular"],
-      ["lumen", "내강 · 세포 밖과 연결"],
+      ["lumen", "T소관 내강 · 세포 밖과 연결"],
+      ["srLumen", "SR 내강 · 별개의 공간"], ["head", "친수성 머리 · 물 쪽"], ["tail", "두 소수성 꼬리 · 막 중심"],
+      ["tCytosolic", "T · cytosolic 머리"], ["srCytosolic", "SR · cytosolic 머리"],
+      ["exoplasmic", "T · exoplasmic → 내강"], ["srLuminal", "SR · luminal → 내강"],
+      ["junctionGap", "세포질 접합 틈"],
     ];
     for (const [key, text] of annotations) {
       if (!interior.anchors[key]) continue;
       interiorLabels.set(key, L.add(text, { anchor: interior.anchors[key], group: "interior",
-        variant: "interior", visible: false, screen: { x: 0.2, y: 0.1 } }));
+        variant: key === "junctionGap" ? "interior label--interior-gap" : "interior", visible: false, screen: { x: 0.2, y: 0.1 } }));
     }
     return interior;
   }
 
   function updateInteriorLabels() {
     const keys = {
-      overview: ["nmj", "sarcolemma", "myofibril", "sr", "triad"],
+      overview: ["sarcolemma", "tubule", "sr", "triad"],
       continuity: ["extracellular", "lumen", "cytosol", "sr"],
       triad: ["cisternaLeft", "tubule", "cisternaRight", "lumen"],
       nmj: ["nmj", "sarcolemma", "extracellular"],
       tubule: ["sarcolemma", "extracellular", "lumen", "tubule"],
-      sr: ["sr", "myofibril", "cisternaLeft"],
+      lumen: ["lumen", "tubule", "cytosol"],
+      sr: ["sr", "srLumen"],
+      "sr-lumen": ["sr", "srLumen"], cisterna: ["sr", "cisternaLeft", "srLumen"],
+      sarcolemma: ["head", "tail", "sarcolemma"], "cross-section": ["head", "tail"],
+      "triad-detail": ["tCytosolic", "srCytosolic", "exoplasmic", "srLuminal", "junctionGap"],
+      "membrane-zoom": ["tCytosolic", "exoplasmic", "lumen"],
+      compare: ["cisternaLeft", "tubule", "cisternaRight"],
       excitation: ["nmj", "sarcolemma", "tubule", "sr"],
     }[interiorMode];
-    const slots = [[0.2, 0.09], [0.79, 0.09], [0.2, 0.89], [0.79, 0.89], [0.8, 0.5]];
+    const slots = interiorMode === "triad-detail"
+      ? [[0.2, 0.16], [0.79, 0.16], [0.2, 0.89], [0.79, 0.89], [0.5, 0.045]]
+      : [[0.2, 0.09], [0.79, 0.09], [0.2, 0.89], [0.79, 0.89], [0.8, 0.5]];
     L.only(["interior"]);
     for (const [key, label] of interiorLabels) {
       const index = keys.indexOf(key);
       label.visible = index >= 0;
+      // Point at the visible tube wall / neck, rather than the offscreen mouth
+      // or the deeper triad when inspecting the entry from outside.
+      if (key === "tubule") label.anchor = ["triad", "compare"].includes(interiorMode)
+        ? interior.anchors.tCytosolic : interior.anchors.tubule;
+      if (key === "lumen") label.anchor = interiorMode === "tubule"
+        ? interior.surfaces.neck : interior.anchors.lumen;
       if (index >= 0) label.screen = { x: slots[index][0], y: slots[index][1] };
     }
   }
@@ -490,6 +519,7 @@ export function createMembraneModule() {
     leaveInspect();
     const scene = ensureInterior();
     viewMode = scale = "interior";
+    updateViewPresentation();
     mode = "overview";
     interiorMode = next;
     shownExcitationStep = "";
@@ -506,6 +536,8 @@ export function createMembraneModule() {
     viewer.setPickables([]);
     updateInteriorLabels();
     setCaption(els, next === "overview" ? "interior" : next);
+    document.getElementById("m1-interior-description").textContent = els.capText.textContent;
+    els.capText.textContent = INTERIOR_SUMMARIES[next];
     interiorSequence.hidden = next !== "excitation";
     interiorSequence.textContent = "NMJ → 운동종판 → 근섬유막 → T소관 → triad → SR Ca²⁺ 방출 · 순서만 표시한 모식도";
     syncButtons();
@@ -526,6 +558,7 @@ export function createMembraneModule() {
     resetPS();
     leaveInspect();
     viewMode = "cell";
+    updateViewPresentation();
     selectedLipid = null;
     mode = next;
     highlightLegend(null);
@@ -660,8 +693,8 @@ export function createMembraneModule() {
     sectionKey.hidden = true;
     scaleStatus.hidden = false;
     scaleStatus.dataset.phase = "representative";
-    scaleStatus.textContent = next === "interior" ? "응용 예시 · 골격근 섬유의 막 구획화"
-      : next === "membrane" ? "근섬유막의 표시 영역 → 지질 이중층 확대" : "닫힌 이중층의 개념 모델 · 세포 전체";
+    scaleStatus.textContent = next === "interior" ? "응용 예시 · 골격근 섬유에서 본 막과 구획화"
+      : next === "membrane" ? "같은 인지질 · 곡면 → 머리와 꼬리 → 막 조각" : "닫힌 이중층의 개념 모델 · 세포 전체";
     const approach = previous === "interior" && next === "membrane";
     const from = { radius: viewer.controls.radius, theta: viewer.controls.theta,
       phi: viewer.controls.phi, target: viewer.controls.target.clone() };
@@ -669,9 +702,14 @@ export function createMembraneModule() {
     to.theta = from.theta + Math.atan2(Math.sin(to.theta - from.theta), Math.cos(to.theta - from.theta));
     const switchAt = approach ? 0.7 : 0.5;
     let switched = false;
+    let resolvedLipids = false;
     syncButtons();
-    tween(approach ? 1.5 : 0.8, (p) => {
+    tween(approach ? 2.6 : 0.8, (p) => {
       if (approach && p < switchAt) {
+        if (p > 0.2 && !resolvedLipids) {
+          resolvedLipids = true;
+          interior.setMode(["sarcolemma", "cross-section"].includes(interiorMode) ? "cross-section" : "membrane-zoom");
+        }
         const e = easeInOut(Math.min(1, p / 0.5));
         viewer.controls.frame({ radius: THREE.MathUtils.lerp(from.radius, to.radius, e),
           theta: THREE.MathUtils.lerp(from.theta, to.theta, e), phi: THREE.MathUtils.lerp(from.phi, to.phi, e),
@@ -719,6 +757,7 @@ export function createMembraneModule() {
     resetPS();
     leaveInspect();
     viewMode = "membrane";
+    updateViewPresentation();
     selectedLipid = null;
     mode = next;
     highlightLegend(null);
@@ -888,6 +927,7 @@ export function createMembraneModule() {
     inspectId = id;
     selectedLipid = id;
     viewMode = "atomistic3D";
+    updateViewPresentation();
     mode = "inspect";
 
     bilayer.visible = false;
@@ -1020,9 +1060,9 @@ export function createMembraneModule() {
   /* ---------------- 프레임 갱신 ---------------- */
 
   viewer.onUpdate((dt) => {
-    if (viewMode === "interior" && !transitioning) {
-      interior.update(dt);
-      if (interiorMode === "excitation") {
+    if (viewMode === "interior") {
+      interior.update(dt, viewer.controls);
+      if (interiorMode === "excitation" && !transitioning) {
         const { excitationStep, excitationComplete } = interior.getStats();
         const key = excitationComplete ? "complete" : String(excitationStep);
         if (key !== shownExcitationStep) {
@@ -1066,7 +1106,7 @@ export function createMembraneModule() {
         setInteriorMode(a.slice("interior-".length));
         // On phones the explanatory panel stacks below the scene. Bring the
         // focused structure into view when its panel shortcut is used.
-        if (["interior-nmj", "interior-tubule", "interior-sr"].includes(a)) {
+        if (a.startsWith("interior-")) {
           const bounds = viewer.host.getBoundingClientRect();
           if (bounds.bottom < 0 || bounds.top > window.innerHeight || matchMedia("(max-width: 680px)").matches)
             viewer.host.scrollIntoView({ behavior: REDUCED_MOTION ? "instant" : "smooth", block: "center" });
@@ -1111,6 +1151,7 @@ export function createMembraneModule() {
   });
 
   function syncButtons() {
+    updateViewPresentation();
     for (const b of buttons) {
       const a = b.dataset.m1;
       if (["overview", "types", "asymmetry", "psflip"].includes(a)) {
@@ -1133,17 +1174,18 @@ export function createMembraneModule() {
       structureBtn.setAttribute("aria-pressed", String(viewMode === "structure2D"));
     }
     document.querySelector('[data-m1="back"]').textContent = scale === "cell" ? "← 세포 전체로 돌아가기"
-      : scale === "interior" ? "← 세포 내부로 돌아가기" : "← 막 전체로 돌아가기";
+      : scale === "interior" ? "← 세포 속 막 구조로 돌아가기" : "← 막 전체로 돌아가기";
     const inInterior = viewMode === "interior";
     interiorTools.hidden = interiorPanel.hidden = interiorKey.hidden = !inInterior;
     interiorSequence.hidden = !inInterior || interiorMode !== "excitation";
     document.querySelector("#module-membrane .controls__sep").hidden = inInterior;
     interiorKey.classList.toggle("is-continuity", interiorMode === "continuity");
+    document.getElementById("m1-composition-compare").hidden = !inInterior || interiorMode !== "compare";
     document.getElementById("m1-scale-molecule").classList.toggle("is-current", !!selectedLipid);
     const scaleNote = document.getElementById("m1-scale-note");
     scaleNote.hidden = !["cell", "interior", "membrane"].includes(viewMode);
     scaleNote.textContent = inInterior
-      ? "골격근 일부를 표현한 교육용 단면입니다. T소관도 일부 절개했으며, 잘린 끝은 관찰 범위의 경계입니다. 살아 있는 관이 세포질로 열려 있다는 뜻이 아닙니다. 크기·간격·상대 비율은 실제와 다릅니다."
+      ? "인지질 크기와 밀도는 구조 관찰을 위해 과장·축소되어 있습니다. 막 두께와 접합 틈도 확대했습니다. 확대 시 주변 막을 생략합니다. 절개는 관찰용입니다."
       : "막 두께와 지질 크기는 구조를 관찰하기 위해 실제 비율보다 과장되어 있습니다.";
     document.querySelector('[data-m1="spin"]').setAttribute("aria-pressed", String(viewer.controls.autoRotate));
     viewer.host.dataset.view = viewMode;
@@ -1178,7 +1220,7 @@ export function createMembraneModule() {
     getDiagnostics() {
       const { diagnostic, ...sceneStats } = viewMode === "interior" ? interior.getStats() : cell.getStats();
       return { viewMode, scale, mode: viewMode === "interior" ? interiorMode : mode, cutaway, transitioning, selectedLipid,
-        ...sceneStats, cameraRadius: viewer.controls.radius,
+        ...sceneStats, cameraRadius: viewer.controls.radius, cameraFov: viewer.camera.fov,
         minRadius: viewer.controls.minRadius, maxRadius: viewer.controls.maxRadius,
         drawCalls: viewer.renderer.info.render.calls, triangles: viewer.renderer.info.render.triangles };
     },
